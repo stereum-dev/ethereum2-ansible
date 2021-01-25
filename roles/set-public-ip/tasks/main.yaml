@@ -1,0 +1,12 @@
+--
+- name: Prysm - Configure correct public ip address
+  lineinfile:
+    path: "{{ e2dc_install_path }}/{{ item }}"
+    regexp: '^p2p-host-ip: '
+    line: 'p2p-host-ip: {{ ansible_default_ipv4.address }}'
+  loop:
+    - config/prysm/beacon.yaml
+    - config/prysm/beacon-no-geth.yaml
+    - config/prysm/slasher/beacon.yaml
+  become: yes
+  become_user: "{{ stereum_user }}"

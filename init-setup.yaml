@@ -1,0 +1,14 @@
+--
+- hosts: localhost
+  connection: local
+
+  roles:
+    - role: add-stereum-user
+    - role: configure-timesyncd
+    - role: install-docker
+    - role: install-e2dc
+    - role: switch-to-network
+    - role: set-setup
+    - role: set-public-ip
+    - role: start-services
+      start-services: "{{ setups[setup] }}"

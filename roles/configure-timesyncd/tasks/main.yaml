@@ -1,0 +1,12 @@
+---
+- name: set correct ntp settings
+  blockinfile:
+    path: "/etc/systemd/timesyncd.conf"
+    backup: yes
+    insertafter: "[Time]"
+    block: |
+      NTP=0.pool.ntp.org 2.pool.ntp.org
+      FallbackNTP=1.pool.ntp.org 3.pool.ntp.org
+      RootDistanceMaxSec=1
+  notify: Restart timesyncd
+  become: yes

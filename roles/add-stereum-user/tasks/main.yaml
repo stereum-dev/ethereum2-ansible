@@ -1,0 +1,11 @@
+--
+- name: Add stereum user
+  user: name={{ stereum_user }} shell=/bin/bash
+  become: yes
+
+- name: Add stereum user to sudoers
+  lineinfile: dest=/etc/sudoers
+    regexp="{{ stereum_user }} ALL"
+    line="{{ stereum_user }} ALL=(ALL) NOPASSWD:ALL"
+    state=present
+  become: yes
