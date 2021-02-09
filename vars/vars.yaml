@@ -1,0 +1,54 @@
+e2dc_install_path: /opt/stereum/ethereum2-docker-compose
+stereum_user: stereum
+network: pyrmont
+setup: lighthouse-only
+
+# mapping table (key, value) with network name as key and branch name as value
+networks:
+  pyrmont: master
+  mainnet: mainnet
+
+setups:
+  lighthouse-only:
+    services:
+      - geth
+      - beacon
+      - validator
+      - prometheus
+      - grafana
+    validator-services:
+      - validator
+    compose-path: lighthouse-only/docker-compose.yaml
+    create-account: lighthouse-only/create-account.yaml
+  prysm-only:
+    services:
+      - geth
+      - beacon
+      - slasher
+      - validator
+      - prometheus
+      - grafana
+    validator-services:
+      - validator
+    compose-path: prysm-only/docker-compose.yaml
+    create-account: prysm-only/create-account.yaml
+  multiclient:
+    services:
+      - geth
+      - prysm_beacon
+      - prysm_beacon_slasher
+      - lighthouse_beacon
+      - teku_beacon
+      - dirk
+      - vouch
+      - prysm_slasher
+      - grafana
+      - prometheus
+    validator-services:
+      - dirk
+      - vouch
+    compose-path: multiclient-vouch-dirk/docker-compose.yaml
+
+# docker settings
+docker_address_pool_base: 172.80.0.0/12
+docker_address_pool_size: 24

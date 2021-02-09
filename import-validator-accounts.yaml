@@ -1,0 +1,13 @@
+--
+- hosts: localhost
+  connection: local
+
+  roles:
+    - role: import-validator-keys
+      validator_keys_path: /home/user/deposit-cli/validator_keys
+
+    - role: stop-services
+      stop-services: "{{ setups[setup].validator-services }}"
+
+    - role: start-services
+      start-services: "{{ setups[setup].validator-services }}"
