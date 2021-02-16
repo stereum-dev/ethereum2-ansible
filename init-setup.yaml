@@ -5,9 +5,9 @@
   - ./vars/vars.yaml
 
   roles:
-          #- role: add-stereum-user
-          #- role: configure-timesyncd
-          #- role: install-docker
+    - role: add-stereum-user
+    - role: configure-timesyncd
+    - role: install-docker
     - role: install-e2dc
     - role: switch-to-network
     - role: set-setup
