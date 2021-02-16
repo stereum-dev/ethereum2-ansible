@@ -1,4 +1,4 @@
---
+---
 - name: Checkout branch
   git:
     repo: "https://github.com/stereum-dev/ethereum2-docker-compose.git"
