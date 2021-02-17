@@ -1,15 +1,15 @@
---
+---
 - name: Copy docker-compose.yaml
-  command: "cp '{{ setups[setup].compose-path }}' 'docker-compose.yaml'"
+  command: "cp 'compose-examples/{{ setups[setup].compose_path }}' 'docker-compose.yaml'"
   args:
     chdir: "{{ e2dc_install_path }}"
   become: yes
   become_user: "{{ stereum_user }}"
 
 - name: Copy create-account.yaml
-  command: "cp '{{ setups[setup].create-account }}' 'create-account.yaml'"
+  command: "cp 'compose-examples/{{ setups[setup].create_account }}' 'create-account.yaml'"
   args:
     chdir: "{{ e2dc_install_path }}"
   become: yes
   become_user: "{{ stereum_user }}"
-  when: setups[setup].create-account is defined
+  when: setups[setup].create_account is defined
