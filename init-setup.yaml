@@ -1,4 +1,4 @@
----
+---test
 - hosts: localhost
   connection: local
   vars_files:
