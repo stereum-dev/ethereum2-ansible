@@ -13,4 +13,7 @@
     - role: set-setup
     - role: set-public-ip
     - role: start-services
+    - role: git-update
+    - role: git-update-fetch-merge
+    - role: stop-all-containers
       start-services: "{{ setups[setup] }}"
