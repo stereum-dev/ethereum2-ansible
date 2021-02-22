@@ -1,0 +1,12 @@
+---
+- name: fetch latest changes
+  shell: git fetch
+  args:
+    chdir: "{{ e2dc_install_path }}"
+  become: yes
+  
+- name: merge latest changes into local repository
+  shell: git merge
+  args:
+    chdir: "{{ e2dc_install_path }}"
+  become: yes
