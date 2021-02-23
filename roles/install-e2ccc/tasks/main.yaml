@@ -1,0 +1,25 @@
+---
+- name: Install required system packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop:
+    - git
+  become: yes
+
+- name: Clone Ethereum 2.0 control center cli
+  git:
+    repo: "https://github.com/stereum-dev/ethereum2-control-center-cli.git"
+    dest: "{{ e2ccc_install_path }}"
+  become: yes
+
+- name: Change file ownership and group of clone
+  file:
+    state: directory
+    path: "{{ e2ccc_install_path }}"
+    owner: "{{ stereum_user }}"
+    group: "{{ stereum_user }}"
+    recurse: yes
+  become: yes
+
