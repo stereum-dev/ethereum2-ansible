@@ -2,13 +2,15 @@
 - hosts: localhost
   connection: local
   vars_files:
-  - ./vars/vars.yaml
+  - /etc/stereum/ethereum2.yaml
 
   roles:
     - role: add-stereum-user
     - role: configure-timesyncd
     - role: install-docker
     - role: install-e2dc
+    - role: install-e2a
+    - role: install-e2ccc
     - role: switch-to-network
     - role: set-setup
     - role: set-public-ip
