@@ -1,0 +1,19 @@
+---
+- name: Get a list of all running containers
+  shell: "docker ps --format '{{ '{{' }} .Names {{ '}}' }}'"
+  register: container_name
+
+- name: Print container names  
+  ansible.builtin.debug:
+    msg: "Container names: '{{ container_name.stdout_lines}}'"
+
+- name: Get a Container name which you want to stop
+  pause:
+    prompt: "Please give a name of container which you would like to stop: "
+    echo: yes
+  register: con_name
+  
+- name: Stop a container
+  docker_container:
+    name: "{{ con_name.user_input }}"
+    state: stopped  

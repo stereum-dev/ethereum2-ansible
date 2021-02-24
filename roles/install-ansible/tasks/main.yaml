@@ -1,0 +1,25 @@
+---
+- name: Update and upgrade apt packages
+  become: true
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 3600 
+  
+- name: Install software-properties-common 
+  become: yes
+  apt:
+    name: software-properties-common
+    state: present
+
+- name: add repository
+  become: yes
+  apt_repository: 
+    repo: 'ppa:ansible/ansible'
+    state: present
+
+- name: Install ansible
+  become: yes
+  apt:
+    name: ansible
+    state: present
