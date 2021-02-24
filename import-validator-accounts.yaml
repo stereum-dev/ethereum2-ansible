@@ -1,13 +1,14 @@
---
+---
 - hosts: localhost
   connection: local
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
 
   roles:
     - role: import-validator-keys
-      validator_keys_path: /home/user/deposit-cli/validator_keys
 
     - role: stop-services
-      stop-services: "{{ setups[setup].validator-services }}"
+      stop-services: "{{ setups[setup].validator_services }}"
 
     - role: start-services
-      start-services: "{{ setups[setup].validator-services }}"
+      start-services: "{{ setups[setup].validator_services }}"
