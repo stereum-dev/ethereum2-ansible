@@ -1,7 +1,19 @@
 ---
+- name: stash changes
+  shell: git stash save "changes"
+  args:
+    chdir: "{{ e2dc_install_path }}"
+  become: yes
+
 - name: pull latest changes
   shell: git pull 
   args:
     chdir: "{{ e2dc_install_path }}"
   become: yes   
-  become_user: "{{ stereum_user }}" 
+  become_user: "{{ stereum_user }}"
+
+- name: put the changes back to the repository
+  shell: git stash pop
+  args:
+    chdir: "{{ e2dc_install_path }}"
+  become: yes  
