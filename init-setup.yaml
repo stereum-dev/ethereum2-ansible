@@ -15,6 +15,7 @@
     - role: set-setup
     - role: set-public-ip
     - role: set-override
+    - role: set-external-eth1
     - role: start-services
     - role: install-ansible  
       start-services: "{{ setups[setup] }}"
