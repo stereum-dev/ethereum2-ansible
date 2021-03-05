@@ -1,0 +1,36 @@
+---
+- name: Set external eth1 for lighthouse
+  lineinfile:
+    path: "{{ e2dc_install_path }}/config/lighthouse/beacon.env"
+    regexp: '^ETH1_NODE='
+    line: 'ETH1_NODE={{ eth1_node }}'
+  when: setup == "lighthouse" and setup_override == "no-geth"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Set external eth1 for lodestar
+  lineinfile:
+    path: "{{ e2dc_install_path }}/docker-compose.yaml"
+    regexp: '^\s*\-\s\-\-eth1.providerUrl='
+    line: '      - --eth1.providerUrl={{ eth1_node }}'
+  when: setup == "lodestar" and setup_override == "no-geth"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Set external eth1 for nimbus
+  lineinfile:
+    path: "{{ e2dc_install_path }}/docker-compose.yaml"
+    regexp: '^\s*\-\s\-\-web3-url='
+    line: '      - --web3-url=ws://geth:8545{{ eth1_node }}'
+  when: setup == "nimbus" and setup_override == "no-geth"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Set external eth1 for prysm
+  lineinfile:
+    path: "{{ e2dc_install_path }}/config/prysm/beacon-no-geth.yaml"
+    regexp: '^http\-web3provider:'
+    line: 'http-web3provider: "{{ eth1_node }}"'
+  when: setup == "prysm" and setup_override == "beacon-validator"
+  become: yes
+  become_user: "{{ stereum_user }}"
