@@ -14,6 +14,7 @@
     - role: switch-to-network
     - role: set-setup
     - role: set-public-ip
+    - role: set-override
     - role: start-services
     - role: install-ansible  
       start-services: "{{ setups[setup] }}"
