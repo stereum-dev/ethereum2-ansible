@@ -1,0 +1,6 @@
+---
+- name: Copy override (if set) to project's root dir
+  command: cp "{{ e2dc_install_path }}/{{ setups[setup].overrides_path }}/docker-compose.{{ setup_override }}.override.yaml" "{{ e2dc_install_path }}/docker-compose.override.yaml"
+  when: setup_override != "default"
+  become: yes
+  become_user: "{{ stereum_user }}"
