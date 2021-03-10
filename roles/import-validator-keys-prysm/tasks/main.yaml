@@ -1,0 +1,37 @@
+---
+- name: Install pip
+  apt:
+    update_cache: yes
+    name:
+      - python3-pip
+
+- name: Install pexpect
+  pip:
+    name: pexpect
+
+- name: Copy lanchpad wallet's validator_keys
+  command: "cp -r {{ validator_keys_path }}/. {{ e2dc_install_path }}/launchpad"
+  become: yes
+  become_user: "{{ stereum_user }}"
+  when: setups[setup].create_account is defined
+
+- name: Get wallet's password
+  lineinfile:
+    path: "{{ e2dc_install_path }}//data/prysm/validator/passwords/wallet-password"
+    line: "{{ wallet_password }}"
+    insertbefore: BOF
+  become: yes
+  become_user: "{{ stereum_user }}"    
+
+- name: Run import
+  ansible.builtin.expect:  
+    command: "docker-compose -f create-account.yaml run validator-import-launchpad"
+    timeout: 10
+    responses:     
+       'to accept this terms': "accept" 
+       'the password for your imported accounts': "{{ validator_password }}"
+  args:
+    chdir: "{{ e2dc_install_path }}"
+  become: yes
+  become_user: "{{ stereum_user }}"
+  when: setups[setup].create_account is defined
