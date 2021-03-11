@@ -22,4 +22,3 @@
     group: "{{ stereum_user }}"
     recurse: yes
   become: yes
-
