@@ -16,12 +16,12 @@
       install_e2dc_install_path: "{{ e2dc_install_path }}"
     - role: git-checkout-tag
       git_checkout_tag_git_repo_path: "{{ e2dc_install_path }}"
-      git_update_pull_tag: "{{ stereum_version_tag }}"
+      git_update_pull_tag: "{{ network }}-{{ stereum_version_tag }}"
       skip_stashing: true
 
     - role: install-e2a
     - role: git-checkout-tag
-      git_checkout_tag_git_repo_path: "{{ e2dc_install_path }}"
+      git_checkout_tag_git_repo_path: "{{ e2a_install_path }}"
       git_update_pull_tag: "{{ stereum_version_tag }}"
       skip_stashing: true
 
