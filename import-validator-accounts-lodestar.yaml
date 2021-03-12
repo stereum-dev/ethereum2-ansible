@@ -5,10 +5,10 @@
     - /etc/stereum/ethereum2.yaml
 
   roles:
-    - role: import-validator-keys
-
     - role: stop-services
       stop-services: "{{ setups[setup].validator_services }}"
+    
+    - role: import-validator-keys-lodestar  
 
     - role: start-services
       start-services: "{{ setups[setup].validator_services }}"
