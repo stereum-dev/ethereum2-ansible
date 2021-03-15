@@ -1,0 +1,30 @@
+---
+- name: Copy lanchpad wallet's validator_keys
+  command: "cp -r {{ validator_keys_path }}/. {{ e2dc_install_path }}/launchpad"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Create password files
+  shell: "find '{{ e2dc_install_path }}/launchpad' -name '*.json' | while read f; do cp $f $(basename ${f} .json).txt; done"
+  args:
+    chdir: "{{ e2dc_install_path }}/launchpad"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Get key files
+  find:
+    paths: "{{ e2dc_install_path }}/launchpad"
+    patterns: "*.txt"
+    file_type: "file"
+  register: password_files 
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Replace content with validator password
+  replace:
+    path: "{{ item.path }}"
+    regexp: '.+'
+    replace: "{{ validator_password }}"
+  with_items: "{{ password_files.files }}"  
+  become: yes
+  become_user: "{{ stereum_user }}"

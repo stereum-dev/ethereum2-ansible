@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  connection: local
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  roles:
+    - role: stop-services
+      stop-services: "{{ setups[setup].validator_services }}"
+
+    - role: import-validator-keys-teku
+
+    - role: start-services
+      start-services: "{{ setups[setup].validator_services }}"
