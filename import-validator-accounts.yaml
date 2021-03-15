@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  connection: local
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+    - name: call stop-services role
+      include_role:
+        name: stop-services
+
+    - name: import to lighthouse
+      include_role:
+        name: import-validator-keys-lighthouse
+      when: setup == "lighthouse"
+
+    - name: import to lodestar
+      include_role:
+        name: import-validator-keys-lodestar
+      when: setup == "lodestar"
+
+    - name: import to nimbus
+      include_role:
+        name: import-validator-keys-nimbus
+      when: setup == "nimbus"
+
+    - name: import to prysm
+      include_role:
+        name: import-validator-keys-prysm
+      when: setup == "prysm"
+
+    - name: import to teku
+      include_role:
+        name: import-validator-keys-teku
+      when: setup == "teku"
+
+    - name: call start-services role
+      include_role:
+        name: start-services
+
+# EOF
