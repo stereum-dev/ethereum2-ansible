@@ -23,3 +23,11 @@
   apt:
     name: ansible
     state: present
+
+- name: Configure ansible logging
+  lineinfile:
+    path: "/etc/ansible/ansible.cfg"
+    regexp: '^#?log_path.*'
+    line: 'log_path = /var/log/ansible.log'
+
+# EOF
