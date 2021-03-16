@@ -1,13 +1,7 @@
 ---
 - name: Install expect
   apt:
-    name: expect    
-
-- name: Copy lanchpad wallet's validator_keys
-  command: "cp -r {{ validator_keys_path }}/. {{ e2dc_install_path }}/launchpad"
-  become: yes
-  become_user: "{{ stereum_user }}"
-  when: setups[setup].create_account is defined 
+    name: expect
 
 - name: Run import
   script: "{{ e2dc_install_path }}/import.sh"

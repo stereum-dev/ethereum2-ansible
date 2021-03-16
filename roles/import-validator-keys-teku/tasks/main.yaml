@@ -1,9 +1,4 @@
 ---
-- name: Copy lanchpad wallet's validator_keys
-  command: "cp -r {{ validator_keys_path }}/. {{ e2dc_install_path }}/launchpad"
-  become: yes
-  become_user: "{{ stereum_user }}"
-
 - name: Create password files
   shell: "find '{{ e2dc_install_path }}/launchpad' -name '*.json' | while read f; do cp $f $(basename ${f} .json).txt; done"
   args:

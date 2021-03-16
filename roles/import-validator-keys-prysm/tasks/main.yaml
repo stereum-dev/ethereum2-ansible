@@ -9,12 +9,6 @@
   pip:
     name: pexpect
 
-- name: Copy lanchpad wallet's validator_keys
-  command: "cp -r {{ validator_keys_path }}/. {{ e2dc_install_path }}/launchpad"
-  become: yes
-  become_user: "{{ stereum_user }}"
-  when: setups[setup].create_account is defined
-
 - name: Get wallet's password
   lineinfile:
     path: "{{ e2dc_install_path }}//data/prysm/validator/passwords/wallet-password"
