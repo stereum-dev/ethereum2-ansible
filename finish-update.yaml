@@ -12,4 +12,5 @@
     - role: set-external-eth1
 
     - role: start-services
-      start-services: "{{ setups[setup].services }}"
+
+# EOF
