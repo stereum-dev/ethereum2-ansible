@@ -10,7 +10,7 @@
         name: stop-services
 
     - name: Copy lanchpad wallet's validator keys
-      command: "cp -r {{ validator_keys_path }}/keystore-*.json {{ e2dc_install_path }}/launchpad"
+      shell: "cp {{ validator_keys_path }}/keystore-*.json {{ e2dc_install_path }}/launchpad"
       become: yes
       become_user: "{{ stereum_user }}"
 
