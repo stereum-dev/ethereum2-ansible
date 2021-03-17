@@ -9,6 +9,9 @@
   pip:
     name: pexpect
 
+- name: Set correct permissions
+  shell: "chmod -R 700 {{ e2dc_install_path }}/data/validator"
+
 - name: Run import
   ansible.builtin.expect:
     command: "docker-compose -f create-account.yaml run validator-import-launchpad"
@@ -18,4 +21,5 @@
     chdir: "{{ e2dc_install_path }}"
   become: yes
   become_user: "{{ stereum_user }}"
-  when: setups[setup].create_account is defined
+
+# EOF
