@@ -9,6 +9,9 @@
       include_role:
         name: stop-services
 
+    - name: Set permissions of import folder
+      shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/launchpad"
+
     - name: Copy lanchpad wallet's validator keys
       shell: "cp {{ validator_keys_path }}/keystore-*.json {{ e2dc_install_path }}/launchpad"
       become: yes
