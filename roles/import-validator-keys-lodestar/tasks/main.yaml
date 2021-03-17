@@ -4,16 +4,18 @@
     name: expect
 
 - name: Run import
-  script: "{{ e2dc_install_path }}/import.sh"
+  script: "{{ e2dc_install_path }}/lodestar_validator_import.sh \"{{ validator_password }}\""
   args:
     chdir: "{{ e2dc_install_path }}"
-  register: result 
+  register: result
   become: yes
   become_user: "{{ stereum_user }}"
   ignore_errors: yes
-  when: setups[setup].create_account is defined  
+  when: setups[setup].create_account is defined
 
 - name: Error massage
   fail:
-    msg: "Invalid Password!!! Please check your validator password and try it again."       
-  failed_when: "'Invalid password' in result.stdout" 
+    msg: "Invalid Password!!! Please check your validator password and try it again."
+  failed_when: "'Invalid password' in result.stdout"
+
+# EOF
