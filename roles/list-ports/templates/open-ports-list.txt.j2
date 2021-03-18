@@ -1,0 +1,6 @@
+{% for ports_result in docker_compose_ports.results %}
+Service: {{ports_result.item}}
+Ports:
+{{ports_result.stdout}}
+
+{% endfor %}
