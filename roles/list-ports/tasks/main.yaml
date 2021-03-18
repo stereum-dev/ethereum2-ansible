@@ -1,0 +1,26 @@
+---
+- name: Get list of services
+  shell: "docker ps --no-trunc"
+  register: docker_compose_ps
+
+- name: Collect open ports
+  shell: "docker port {{ item }}"
+  register: docker_compose_ports
+  loop: "{{ docker_compose_ps.stdout.split() | select('match', '^ethereum2-docker-compose_.*') | list() }}"
+
+- name: Write ports to file (json format)
+  copy:
+    content: "{{ docker_compose_ports }}"
+    dest: "{{ e2dc_install_path }}/open-ports-list.json"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Write ports to file (txt format)
+  template:
+    src: open-ports-list.txt.j2
+    dest: "{{ e2dc_install_path }}/open-ports-list.txt"
+    owner: "{{ stereum_user }}"
+    group: "{{ stereum_user }}"
+    mode: 0644
+
+# EOF
