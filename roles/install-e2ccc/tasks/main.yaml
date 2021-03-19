@@ -23,3 +23,13 @@
     recurse: yes
   become: yes
 
+- name: Add stereum control center to local/bin
+  file:
+    src: "{{ e2ccc_install_path }}/stereum-control-center-cli.sh"
+    dest: "/usr/local/bin/stereum-control-center-cli"
+    owner: "{{ stereum_user }}"
+    group: "{{ stereum_user }}"
+    state: link
+  become: yes
+
+# EOF
