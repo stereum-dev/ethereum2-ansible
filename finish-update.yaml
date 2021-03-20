@@ -5,11 +5,13 @@
     - /etc/stereum/ethereum2.yaml
 
   roles:
+    - role: apply-config-update
     - role: switch-to-network
     - role: set-setup
     - role: set-public-ip
     - role: set-override
     - role: set-external-eth1
+    - role: set-api-bind-address
 
     - role: start-services
 

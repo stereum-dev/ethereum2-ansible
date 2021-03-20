@@ -1,0 +1,14 @@
+---
+- name: Test for api_bind_address
+  shell: grep -c "^api_bind_address" /etc/stereum/ethereum2.yaml || true
+  register: grep_api_bind_address
+  become: yes
+
+- name: Add api_bind_address to config
+  lineinfile:
+    dest: "/etc/stereum/ethereum2.yaml"
+    line: "api_bind_address: 127.0.0.1"
+  when: grep_api_bind_address.stdout == "0"
+  become: yes
+
+# EOF

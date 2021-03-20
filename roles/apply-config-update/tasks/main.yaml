@@ -1,0 +1,5 @@
+---
+- name: Apply beta-2 changes
+  import_tasks: beta-2.yaml
+
+# EOF
