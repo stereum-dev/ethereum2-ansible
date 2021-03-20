@@ -13,14 +13,14 @@
 
 - name: Test for e2dc_graffiti
   shell: grep -c "^e2dc_graffiti" /etc/stereum/ethereum2.yaml || true
-  register: grep_api_bind_address
+  register: grep_e2dc_graffiti
   become: yes
 
 - name: Add e2dc_graffiti to config
   lineinfile:
     dest: "/etc/stereum/ethereum2.yaml"
     line: "e2dc_graffiti: stereum.net"
-  when: grep_api_bind_address.stdout == "0"
+  when: grep_e2dc_graffiti.stdout == "0"
   become: yes
 
 # EOF
