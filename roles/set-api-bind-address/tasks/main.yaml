@@ -3,7 +3,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/.env"
     regexp: '^BEACON_API_IP='
-    line: 'BEACON_API_IP={{ api_bind_address | default("127.0.0.1") }}'
+    line: 'BEACON_API_IP={{ e2dc_api_bind_address | default("127.0.0.1") }}'
   become: yes
   become_user: "{{ stereum_user }}"
 
