@@ -1,4 +1,16 @@
 ---
+- name: Configure new graffiti in ethereum2.yaml
+  lineinfile:
+    path: "/etc/stereum/ethereum2.yaml"
+    regexp: "^e2dc_graffiti:"
+    line: "e2dc_graffiti: {{ e2dc_graffiti_updated }}"
+  when: e2dc_graffiti_updated is defined
+  become: yes
+
+- name: Setting e2dc_graffiti
+  set_fact: e2dc_graffiti="{{ e2dc_graffiti_updated }}"
+  when: e2dc_graffiti_updated is defined
+
 - name: Set graffiti for lighthouse
   lineinfile:
     path: "{{ e2dc_install_path }}/config/lighthouse/validator.env"

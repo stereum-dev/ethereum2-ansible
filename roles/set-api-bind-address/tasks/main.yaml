@@ -1,4 +1,16 @@
 ---
+- name: Configure new api bind address in ethereum2.yaml
+  lineinfile:
+    path: "/etc/stereum/ethereum2.yaml"
+    regexp: "^e2dc_api_bind_address:"
+    line: "e2dc_api_bind_address: {{ e2dc_api_bind_address_updated }}"
+  when: e2dc_api_bind_address_updated is defined
+  become: yes
+
+- name: Setting e2dc_api_bind_address
+  set_fact: e2dc_api_bind_address="{{ e2dc_api_bind_address_updated }}"
+  when: e2dc_api_bind_address_updated is defined
+
 - name: Set api bind address
   lineinfile:
     path: "{{ e2dc_install_path }}/.env"
