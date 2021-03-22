@@ -1,0 +1,26 @@
+---
+- name: Test for e2dc_api_bind_address
+  shell: grep -c "^e2dc_api_bind_address" /etc/stereum/ethereum2.yaml || true
+  register: grep_e2dc_api_bind_address
+  become: yes
+
+- name: Add e2dc_api_bind_address to config
+  lineinfile:
+    dest: "/etc/stereum/ethereum2.yaml"
+    line: "e2dc_api_bind_address: 127.0.0.1"
+  when: grep_e2dc_api_bind_address.stdout == "0"
+  become: yes
+
+- name: Test for e2dc_graffiti
+  shell: grep -c "^e2dc_graffiti" /etc/stereum/ethereum2.yaml || true
+  register: grep_e2dc_graffiti
+  become: yes
+
+- name: Add e2dc_graffiti to config
+  lineinfile:
+    dest: "/etc/stereum/ethereum2.yaml"
+    line: "e2dc_graffiti: stereum.net"
+  when: grep_e2dc_graffiti.stdout == "0"
+  become: yes
+
+# EOF
