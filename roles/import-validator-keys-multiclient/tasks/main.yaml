@@ -13,19 +13,19 @@
 - name: Install ethdo
   shell: GO111MODULE=on go get github.com/wealdtech/ethdo
 
-- name: Generate wallet password
+- name: Generate password for wallet and account
   shell: uuidgen
-  register: wallet_password_gen  
+  register: password_gen  
 
 - name: create ethdo wallet
-  shell: ~/go/bin/ethdo wallet create --type=hd --mnemonic="{{validator_mnemonic}}" --wallet="Wallet" --wallet-passphrase="{{wallet_password_gen.stdout}}"
+  shell: ~/go/bin/ethdo wallet create --type=hd --mnemonic="{{validator_mnemonic}}" --wallet="Wallet" --wallet-passphrase="{{password_gen.stdout}}"
   
 - name: create account(s)
   shell: |
     i=0
     while [[ "$i" < "{{ validator_number }}" ]]
     do
-    ~/go/bin/ethdo account create --account="Wallet/Account-$i" --path=m/12381/3600/$i/0/0 --wallet-passphrase="{{wallet_password_gen.stdout}}" --passphrase="{{validator_password}}"
+    ~/go/bin/ethdo account create --account="Wallet/Account-$i" --path=m/12381/3600/$i/0/0 --wallet-passphrase="{{password_gen.stdout}}" --passphrase="{{password_gen.stdout}}"
     ((i=i+1))
     done
   args:
