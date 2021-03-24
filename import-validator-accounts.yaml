@@ -11,11 +11,13 @@
 
     - name: Set permissions of import folder
       shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/launchpad"
+      when: setup != "multiclient"
 
     - name: Copy lanchpad wallet's validator keys
       shell: "cp {{ validator_keys_path }}/keystore-*.json {{ e2dc_install_path }}/launchpad"
       become: yes
       become_user: "{{ stereum_user }}"
+      when: setup != "multiclient"
 
     - name: import to lighthouse
       include_role:
@@ -41,6 +43,11 @@
       include_role:
         name: import-validator-keys-teku
       when: setup == "teku"
+    
+    - name: import to multiclient
+      include_role:
+        name: import-validator-keys-multiclient
+      when: setup == "multiclient" 
 
     - name: call start-services role
       include_role:

@@ -1,0 +1,62 @@
+---
+- name: Install required system packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop:
+    - git
+    - build-essential
+    - gcc
+    - golang
+
+- name: Install ethdo
+  shell: GO111MODULE=on go get github.com/wealdtech/ethdo
+
+- name: Generate password for wallet and account
+  shell: uuidgen
+  register: password_gen  
+
+- name: create ethdo wallet
+  shell: ~/go/bin/ethdo wallet create --type=hd --mnemonic="{{validator_mnemonic}}" --wallet="Wallet" --wallet-passphrase="{{password_gen.stdout}}"
+  
+- name: create account(s)
+  shell: |
+    i=0
+    while [[ "$i" < "{{ validator_number }}" ]]
+    do
+    ~/go/bin/ethdo account create --account="Wallet/Account-$i" --path=m/12381/3600/$i/0/0 --wallet-passphrase="{{password_gen.stdout}}" --passphrase="{{password_gen.stdout}}"
+    ((i=i+1))
+    done
+  args:
+    executable: /bin/bash
+
+- name: Copy wallet into Stereum's wallets directory
+  command: cp -r ~/.config/ethereum2/wallets/. {{ e2dc_install_path }}/wallets
+  become: yes
+
+- name: Set permissions of wallet directory
+  shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/wallets"
+
+- name: Put the account password into the Dirk passphrases
+  ansible.builtin.copy:
+    content: '{{password_gen.stdout}}'
+    dest: "{{ e2dc_install_path }}/config/dirk/passphrases/account-passphrase.txt"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Put the wallet password into the Dirk passphrases
+  ansible.builtin.copy:
+    content: '{{password_gen.stdout}}'
+    dest: "{{ e2dc_install_path }}/config/dirk/passphrases/wallet-passphrase.txt"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Put the wallet name into the Vouch
+  ansible.builtin.replace:
+    path: "{{ e2dc_install_path }}/config/vouch/vouch.yml"
+    regexp: '\.\*'
+    replace: 'Wallet'
+  become: yes
+  become_user: "{{ stereum_user }}"
+
