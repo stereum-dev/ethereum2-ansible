@@ -40,14 +40,14 @@
 
 - name: Put the account password into the Dirk passphrases
   ansible.builtin.copy:
-    content: '{{ validator_password }}'
+    content: '{{password_gen.stdout}}'
     dest: "{{ e2dc_install_path }}/config/dirk/passphrases/account-passphrase.txt"
   become: yes
   become_user: "{{ stereum_user }}"
 
 - name: Put the wallet password into the Dirk passphrases
   ansible.builtin.copy:
-    content: 'StereumP@ssw0rd'
+    content: '{{password_gen.stdout}}'
     dest: "{{ e2dc_install_path }}/config/dirk/passphrases/wallet-passphrase.txt"
   become: yes
   become_user: "{{ stereum_user }}"
