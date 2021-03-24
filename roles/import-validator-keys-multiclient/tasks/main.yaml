@@ -18,7 +18,7 @@
   register: password_gen  
 
 - name: create ethdo wallet
-  shell: ~/go/bin/ethdo wallet create --type=hd --mnemonic="{{validator_mnemonic}}" --wallet="Wallet" --wallet-passphrase="{{password_gen.stdout}}"
+  shell: ~/go/bin/ethdo wallet create --type=hd --mnemonic= "{{ validator_mnemonic }}" --wallet="Wallet" --wallet-passphrase="{{password_gen.stdout}}"
   
 - name: create account(s)
   shell: |
