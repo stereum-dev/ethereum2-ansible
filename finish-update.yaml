@@ -6,7 +6,6 @@
 
   roles:
     - role: apply-config-update
-    - role: switch-to-network
     - role: set-setup
     - role: set-public-ip
     - role: set-override
