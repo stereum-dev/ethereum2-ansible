@@ -6,7 +6,7 @@
 
   roles:
     - role: stop-services
-      stop-services: "{{ setups[setup].services }}"
+      ignore_errors: yes
 
     - role: git-checkout-tag
       git_checkout_tag_git_repo_path: "{{ e2a_install_path }}"
