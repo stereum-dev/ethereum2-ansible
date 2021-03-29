@@ -1,0 +1,15 @@
+---
+- name: Test for prater network branch mapping
+  shell: grep -c "^\s{2}prater" /etc/stereum/ethereum2.yaml || true
+  register: grep_prater_mapping
+  become: yes
+
+- name: Add prater network branch mapping to config
+  lineinfile:
+    dest: "/etc/stereum/ethereum2.yaml"
+    insertafter: "^networks:"
+    line: "  prater: prater"
+  when: grep_prater_mapping.stdout == "0"
+  become: yes
+
+# EOF
