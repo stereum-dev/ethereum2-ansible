@@ -20,7 +20,7 @@
 - name: Add exit-account to config
   lineinfile:
     dest: "/etc/stereum/ethereum2.yaml"
-    insertafter: "^\s{4}create_account:\slighthouse-only/create-account.yaml"
+    insertafter: "^\s{4}create_account:\slighthouse-only\/create-account\.yaml"
     line: "    exit_account: lighthouse-only/exit-account.yaml"
   when: exit_account.stdout == "0"
   become: yes
