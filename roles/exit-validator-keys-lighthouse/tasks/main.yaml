@@ -1,0 +1,23 @@
+---
+- name: Install pip
+  apt:
+    update_cache: yes
+    name:
+      - python3-pip
+
+- name: Install pexpect
+  pip:
+    name: pexpect
+
+- name: Run exit validator
+  ansible.builtin.expect:
+    command: "docker-compose -f exit-account.yaml run -e LAUNCHPADDIR='/opt/app/launchpad/{{ validator_keystore }}' exit-validator"
+    timeout: 10
+    responses:
+      'Enter the keystore password for validator': "{{ validator_password }}"
+      'Enter the exit phrase from the above URL': "Exit my validator"
+  args:
+    chdir: "{{ e2dc_install_path }}"
+  become: yes
+  become_user: "{{ stereum_user }}"
+  when: setups[setup].exit_account is defined
