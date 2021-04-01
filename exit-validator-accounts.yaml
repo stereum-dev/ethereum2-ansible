@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+    - name: exit validator account
+      include_role:
+        name: exit-validator-keys-lighthouse
+      when: setup == "lighthouse"
