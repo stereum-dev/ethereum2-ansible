@@ -5,4 +5,7 @@
 - name: Apply beta-3 changes
   import_tasks: beta-3.yaml
 
+- name: Apply beta-4 changes
+  import_tasks: beta-4.yaml
+
 # EOF
