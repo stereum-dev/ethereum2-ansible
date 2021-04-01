@@ -1,0 +1,14 @@
+---
+- name: Test for exit_account
+  shell: grep -c "^\s{4}exit_account: lighthouse-only/exit-account.yaml" /etc/stereum/ethereum2.ya
+  register: exit_account
+  become: yes
+
+- name: Add exit-account to config
+  lineinfile:
+    dest: "/etc/stereum/ethereum2.yaml"
+    insertafter: "^\s{4}create_account: lighthouse-only/create-account.yaml"
+    line: "    exit_account: lighthouse-only/exit-account.yaml"
+  when: exit_account.stdout == "0"
+  become: yes
+
