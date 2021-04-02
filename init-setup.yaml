@@ -34,6 +34,7 @@
     # configure Ethereum 2.0 node
     - role: switch-to-network
     - role: set-setup
+    - role: set-docker-tag
     - role: set-public-ip
     - role: set-override
     - role: set-external-eth1
