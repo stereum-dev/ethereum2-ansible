@@ -25,4 +25,24 @@
   when: exit_account.stdout == "0"
   become: yes
 
+- name: Test for teku overrides
+  shell: grep -c "^\s{4}overrides_path:\scompose-examples\/teku-only\/override-examples" /etc/stereum/ethereum2.yaml || true
+  register: grep_teku_no_geth
+  become: yes
+
+- name: Add teku overrides to config
+  lineinfile:
+    dest: "/etc/stereum/ethereum2.yaml"
+    insertafter: "^\s{4}compose_path:\steku-only"
+    line: "    overrides_path: compose-examples/teku-only/override-examples"
+  when: grep_teku_no_geth.stdout == "0"
+  become: yes
+
+- name: Remove override config
+  lineinfile:
+    dest: "/etc/stereum/ethereum2.yaml"
+    regexp: "^\s{4}overrides:(\n\s{6}.*)*"
+    line: ""
+  become: yes
+
 # EOF
