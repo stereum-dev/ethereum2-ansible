@@ -7,6 +7,7 @@
   roles:
     - role: apply-config-update
     - role: set-setup
+    - role: set-docker-tag
     - role: set-public-ip
     - role: set-override
     - role: set-external-eth1

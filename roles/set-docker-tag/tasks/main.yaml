@@ -1,0 +1,17 @@
+---
+- name: Get cpu information
+  shell: grep -c "^adx" /proc/cpuinfo || true
+  register: grep_adx_cpu_info
+  when: setup == "lighthouse"
+  become: yes
+
+- name: Switch to slower portable lighthouse
+  lineinfile:
+    dest: "/etc/stereum/ethereum2.yaml"
+    regexp: "^LIGHTHOUSE_DOCKER_TAG=v[\d\.]*"
+    line: "\1-portable\3"
+    backrefs: yes
+  when: setup == "lighthouse" and grep_adx_cpu_info.stdout == "0"
+  become: yes
+
+# EOF
