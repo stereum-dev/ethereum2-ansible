@@ -20,7 +20,7 @@
 - name: Add exit-account to config
   lineinfile:
     dest: "/etc/stereum/ethereum2.yaml"
-    insertafter: "^\s{4}create_account:\slighthouse-only\/create-account\.yaml"
+    insertafter: '^\s{4}create_account:\slighthouse-only\/create-account\.yaml'
     line: "    exit_account: lighthouse-only/exit-account.yaml"
   when: exit_account.stdout == "0"
   become: yes
@@ -33,16 +33,16 @@
 - name: Add teku overrides to config
   lineinfile:
     dest: "/etc/stereum/ethereum2.yaml"
-    insertafter: "^\s{4}compose_path:\steku-only"
+    insertafter: '^\s{4}compose_path:\steku-only'
     line: "    overrides_path: compose-examples/teku-only/override-examples"
   when: grep_teku_no_geth.stdout == "0"
   become: yes
 
 - name: Remove override config
-  lineinfile:
+  replace:
     dest: "/etc/stereum/ethereum2.yaml"
-    regexp: "^\s{4}overrides:(\n\s{6}.*)*"
-    line: ""
+    regexp: '^\s{4}overrides:(\n\s{6}.*)*'
+    replace: ""
   become: yes
 
 # EOF
