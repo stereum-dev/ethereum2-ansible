@@ -34,3 +34,21 @@
   when: setup == "prysm" and setup_override == "beacon-validator"
   become: yes
   become_user: "{{ stereum_user }}"
+
+- name: Set external eth1 for teku
+  lineinfile:
+    path: "{{ e2dc_install_path }}/config/teku/beacon.yaml"
+    regexp: '^eth1\-endpoint:'
+    line: 'eth1-endpoint: "{{ eth1_node }}"'
+  when: setup == "teku" and setup_override == "no-geth"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Set external eth1 for teku (multiclient setup)
+  lineinfile:
+    path: "{{ e2dc_install_path }}/config/teku/beacon-mc.yaml"
+    regexp: '^eth1\-endpoint:'
+    line: 'eth1-endpoint: "{{ eth1_node }}"'
+  when: setup == "teku" and setup_override == "no-geth"
+  become: yes
+  become_user: "{{ stereum_user }}"
