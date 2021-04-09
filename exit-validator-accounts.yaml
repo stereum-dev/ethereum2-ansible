@@ -9,3 +9,8 @@
       include_role:
         name: exit-validator-keys-lighthouse
       when: setup == "lighthouse"
+
+    - name: exit validator account
+      include_role:
+        name: exit-validator-keys-lodestar
+      when: setup == "lodestar"  

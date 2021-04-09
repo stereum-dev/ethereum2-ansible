@@ -12,12 +12,12 @@
   when: grep_prater_mapping.stdout == "0"
   become: yes
 
-- name: Test for exit-account
+- name: Test for lighthouse exit-account
   shell: grep -c "^\s{4}exit_account:\slighthouse-only" /etc/stereum/ethereum2.yaml || true
   register: exit_account
   become: yes
 
-- name: Add exit-account to config
+- name: Add lighthouse exit-account to config
   lineinfile:
     dest: "/etc/stereum/ethereum2.yaml"
     insertafter: '^\s{4}create_account:\slighthouse-only\/create-account\.yaml'
@@ -45,4 +45,17 @@
     replace: ""
   become: yes
 
+- name: Test for lodestar exit-account
+  shell: grep -c "^\s{4}exit_account:\slodestar-only" /etc/stereum/ethereum2.yaml || true
+  register: exit_account
+  become: yes
+
+- name: Add lodestar exit-account to config
+  lineinfile:
+    dest: "/etc/stereum/ethereum2.yaml"
+    insertafter: '^\s{4}create_account:\slodestar-only\/create-account\.yaml'
+    line: "    exit_account: lodestar-only/exit-account.yaml"
+  when: exit_account.stdout == "0"
+  become: yes
+  
 # EOF
