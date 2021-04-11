@@ -13,4 +13,9 @@
     - name: exit validator account
       include_role:
         name: exit-validator-keys-lodestar
-      when: setup == "lodestar"  
+      when: setup == "lodestar" 
+    
+    - name: exit validator account
+      include_role:
+        name: exit-validator-keys-prysm
+      when: setup == "prysm"  
