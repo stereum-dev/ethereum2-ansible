@@ -10,7 +10,12 @@
     name: pexpect
 
 - name: Set correct permissions
-  shell: "chmod -R 700 {{ e2dc_install_path }}/data/validator"
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/data/nimbus/validator"
+    owner: "2000"
+    group: "2000"
+    mode: '0700'
+    state: directory
 
 - name: Run import
   ansible.builtin.expect:
