@@ -57,5 +57,18 @@
     line: "    exit_account: lodestar-only/exit-account.yaml"
   when: exit_account.stdout == "0"
   become: yes
-  
+
+- name: Test for prysm exit-account
+  shell: grep -c "^\s{4}exit_account:\sprysm-only" /etc/stereum/ethereum2.yaml || true
+  register: exit_account
+  become: yes
+
+- name: Add prysm exit-account to config
+  lineinfile:
+    dest: "/etc/stereum/ethereum2.yaml"
+    insertafter: '^\s{4}create_account:\sprysm-only\/create-account\.yaml'
+    line: "    exit_account: prysm-only/exit-account.yaml"
+  when: exit_account.stdout == "0"
+  become: yes
+
 # EOF
