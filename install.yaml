@@ -39,6 +39,5 @@
 
     # start Ethereum 2.0 node
     - role: start-services
-      start-services: "{{ setups[setup] }}"
 
 # EOF
