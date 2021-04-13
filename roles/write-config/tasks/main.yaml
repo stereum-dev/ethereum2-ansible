@@ -1,4 +1,13 @@
 ---
+- name: Make sure Stereum's config path exists
+  file:
+    path: "/etc/stereum"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 644
+  become: yes
+
 - name: Write Stereum's ethereum2 config
   template:
     src: ethereum2.yaml.j2
