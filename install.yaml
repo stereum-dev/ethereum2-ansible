@@ -1,8 +1,6 @@
 ---
 - hosts: localhost
   connection: local
-  vars_files:
-    - /etc/stereum/ethereum2.yaml
 
   roles:
     # prepare OS and install OS packages
