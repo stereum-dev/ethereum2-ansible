@@ -1,46 +1,10 @@
 ---
 - hosts: localhost
   connection: local
-  vars_files:
-    - /etc/stereum/ethereum2.yaml
 
   roles:
-    # prepare OS and install OS packages
-    - role: add-stereum-user
-    - role: configure-timesyncd
-    - role: install-docker
-    - role: install-ansible
+    - role: write-config
 
-    # install stereum
-    - role: install-e2dc
-      install_e2dc_install_path: "{{ e2dc_install_path }}"
-    - role: git-checkout-tag
-      git_checkout_tag_git_repo_path: "{{ e2dc_install_path }}"
-      git_update_pull_tag: "{{ network }}-{{ stereum_version_tag }}"
-      skip_stashing: true
-
-    - role: install-e2a
-    - role: git-checkout-tag
-      git_checkout_tag_git_repo_path: "{{ e2a_install_path }}"
-      git_update_pull_tag: "{{ stereum_version_tag }}"
-      skip_stashing: true
-
-    - role: install-e2ccc
-    - role: git-checkout-tag
-      git_checkout_tag_git_repo_path: "{{ e2ccc_install_path }}"
-      git_update_pull_tag: "{{ stereum_version_tag }}"
-      skip_stashing: true
-
-    # configure Ethereum 2.0 node
-    - role: switch-to-network
-    - role: set-setup
-    - role: set-docker-tag
-    - role: set-public-ip
-    - role: set-override
-    - role: set-external-eth1
-
-    # start Ethereum 2.0 node
-    - role: start-services
-      start-services: "{{ setups[setup] }}"
+- import_playbook: install.yaml
 
 # EOF

@@ -1,0 +1,11 @@
+---
+- name: Write Stereum's ethereum2 config
+  template:
+    src: ethereum2.yaml.j2
+    dest: "/etc/stereum/ethereum2.yaml"
+    owner: "root"
+    group: "root"
+    mode: 644
+  become: yes
+
+# EOF
