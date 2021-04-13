@@ -2,9 +2,9 @@ e2dc_install_path: {{e2dc_install_path or install_path~'/ethereum2-docker-compos
 e2a_install_path: {{e2a_install_path or install_path~'/ethereum2-ansible'}}
 e2ccc_install_path: {{e2ccc_install_path or install_path~'/ethereum2-control-center-cli'}}
 stereum_user: stereum
-network: {{e2dc_network}}
-setup: {{e2dc_client}}
-setup_override: {{e2dc_override}}
+network: {{network or e2dc_network}}
+setup: {{setup or e2dc_client}}
+setup_override: {{setup_override or e2dc_override}}
 eth1_node: {{eth1_node}}
 e2dc_api_bind_address: 127.0.0.1
 e2dc_graffiti: stereum.net
