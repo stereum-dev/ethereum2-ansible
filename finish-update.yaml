@@ -4,16 +4,33 @@
   vars_files:
     - /etc/stereum/ethereum2.yaml
 
-  roles:
-    - role: apply-config-update
-    - role: set-setup
-    - role: set-docker-tag
-    - role: set-public-ip
-    - role: set-override
-    - role: set-external-eth1
-    - role: set-api-bind-address
-    - role: set-graffiti
+  tasks:
+    # write config with new template
+    - include_role:
+        name: write-config
 
-    - role: start-services
+    # read config file again, make sure all new keys are available to roles
+    - include_vars:
+        file: /etc/stereum/ethereum2.yaml
+
+    # apply settings
+    - include_role:
+        name: set-setup
+    - include_role:
+        name: set-docker-tag
+    - include_role:
+        name: set-public-ip
+    - include_role:
+        name: set-override
+    - include_role:
+        name: set-external-eth1
+    - include_role:
+        name: set-api-bind-address
+    - include_role:
+        name: set-graffiti
+
+    # start node again
+    - include_role:
+        name: start-services
 
 # EOF
