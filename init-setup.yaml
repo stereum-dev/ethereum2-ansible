@@ -6,7 +6,9 @@
   - import_role:
       name: write-config
 
-- include_vars: /etc/stereum/ethereum2.yaml
+  - include_vars:
+      file: /etc/stereum/ethereum2.yaml
+
 - import_playbook: install.yaml
 
 # EOF
