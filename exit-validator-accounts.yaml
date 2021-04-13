@@ -18,4 +18,9 @@
     - name: exit validator account
       include_role:
         name: exit-validator-keys-prysm
-      when: setup == "prysm"  
+      when: setup == "prysm" 
+    
+    - name: exit validator account
+      include_role:
+        name: exit-validator-keys-nimbus
+      when: setup == "nimbus"
