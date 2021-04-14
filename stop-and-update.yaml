@@ -52,8 +52,8 @@
     - name: Remove available update
       lineinfile:
         path: "/etc/stereum/ethereum2.yaml"
-      regexp: '^\s{2}available:.*'
-      line: "  available:"
+        regexp: '^\s{2}available:.*'
+        line: "  available:"
       become: yes
 
 # EOF
