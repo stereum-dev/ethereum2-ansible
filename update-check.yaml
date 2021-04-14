@@ -7,7 +7,7 @@
   tasks:
   - name: Check latest update of selected lane
     uri:
-      url: "https://stereum.net/downloads/{{ auto_update.lane }}.update"
+      url: "https://stereum.net/downloads/{{ update.lane }}.update"
       return_content: yes
     register: auto_update_latest
 
