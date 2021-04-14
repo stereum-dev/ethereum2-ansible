@@ -1,13 +1,23 @@
-e2dc_install_path: {{e2dc_install_path|default(install_path~'/ethereum2-docker-compose')}}
-e2a_install_path: {{e2a_install_path|default(install_path~'/ethereum2-ansible')}}
-e2ccc_install_path: {{e2ccc_install_path|default(install_path~'/ethereum2-control-center-cli')}}
-stereum_user: stereum
-network: {{network|default(e2dc_network)}}
-setup: {{setup|default(e2dc_client)}}
-setup_override: {{setup_override|default(e2dc_override)}}
-eth1_node: {{eth1_node}}
-e2dc_api_bind_address: 127.0.0.1
-e2dc_graffiti: stereum.net
+e2dc_install_path: {{ e2dc_install_path | default(install_path~'/ethereum2-docker-compose') }}
+e2a_install_path: {{ e2a_install_path | default(install_path~'/ethereum2-ansible') }}
+e2ccc_install_path: {{ e2ccc_install_path | default(install_path~'/ethereum2-control-center-cli') }}
+stereum_user: {{ stereum_user | default('stereum') }}
+network: {{ network }}
+setup: {{ setup }}
+setup_override: {{ setup_override }}
+eth1_node: {{ eth1_node }}
+e2dc_api_bind_address: {{ e2dc_api_bind_address | default('127.0.0.1') }}
+e2dc_graffiti: {{ e2dc_graffiti | default('stereum.net') }}
+stereum_version_tag: {{ stereum_version_tag | default('beta-4-0') }}
+
+# (automatic unattended) update
+update:
+  in_progress:
+  lane: {{ update.lane | default('stable') }}
+  available:
+  unattended:
+    check: {{ update.unattended.check | default('false') }}
+    install: {{ update.unattended.install | default('false') }}
 
 # mapping table (key, value) with network name as key and branch name as value
 networks:

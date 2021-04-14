@@ -36,6 +36,7 @@
     - role: set-public-ip
     - role: set-override
     - role: set-external-eth1
+    - role: configure-autoupdate
 
     # start Ethereum 2.0 node
     - role: start-services
