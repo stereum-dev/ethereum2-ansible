@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  connection: local
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+  - name: Check latest update of selected lane
+    uri:
+      url: "https://stereum.net/downloads/{{ auto_update.lane }}.update"
+      return_content: yes
+    register: auto_update_latest
+
+  - name: Evaluate if new update is available
+    set_fact:
+      update_available: "{{ (auto_update_latest.content.split('-')[ -1 ] | int) > (stereum_version_tag.split('-')[-1] | int) }}"
+
+  - name: Set version available
+    lineinfile:
+      path: "/etc/stereum/ethereum2.yaml"
+      regexp: '^\s{2}available:.*'
+      line: "  available: {{ auto_update_latest.content | trim }}"
+    when: update_available
+    become: yes
+
+# EOF

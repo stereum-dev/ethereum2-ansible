@@ -1,0 +1,21 @@
+---
+- name: Configure update check
+  ansible.builtin.cron:
+    name: "stereum auto update check"
+    minute: "{{ 59 | random }}"
+    job: "cd \"{{ e2a_install_path }}\" && ansible-playbook update-check.yaml"
+    state: "{{ 'present' if update.unattended.check == 'true' else 'absent' }}"
+    user: "{{ stereum_user }}"
+  become: yes
+
+- name: Configure unattended update
+  ansible.builtin.cron:
+    name: "stereum auto unattended update"
+    minute: "{{ 59 | random }}"
+    hour: "{{ 5 | random }}" # execute updates only in the night time/very early morning
+    job: "cd \"{{ e2a_install_path }}\" && ./unattended-update.sh"
+    state: "{{ 'present' if update.unattended.install == 'true' else 'absent' }}"
+    user: "{{ stereum_user }}"
+  become: yes
+
+# EOF

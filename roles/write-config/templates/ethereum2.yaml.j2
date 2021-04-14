@@ -8,12 +8,16 @@ setup_override: {{ setup_override }}
 eth1_node: {{ eth1_node }}
 e2dc_api_bind_address: {{ e2dc_api_bind_address | default('127.0.0.1') }}
 e2dc_graffiti: {{ e2dc_graffiti | default('stereum.net') }}
+stereum_version_tag: {{ stereum_version_tag | default('beta-4-0') }}
 
-# auto update
-auto_update:
-  check_updates: {{ auto_update.check_updates | default('false') }}
-  install_updates: {{ auto_update.install_updates | default('false') }}
-  lane: {{ auto_update.lane | default('stable') }}
+# (automatic unattended) update
+update:
+  in_progress:
+  lane: {{ update.lane | default('stable') }}
+  available:
+  unattended:
+    check: {{ update.unattended.check | default('false') }}
+    install: {{ update.unattended.install | default('false') }}
 
 # mapping table (key, value) with network name as key and branch name as value
 networks:

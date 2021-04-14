@@ -5,7 +5,7 @@
     - /etc/stereum/ethereum2.yaml
 
   tasks:
-    # write config with new template
+    # write config with new template and old settings
     - include_role:
         name: write-config
 
@@ -28,6 +28,14 @@
         name: set-api-bind-address
     - include_role:
         name: set-graffiti
+
+    # update finished
+    - name: Set update in progress
+      lineinfile:
+        path: "/etc/stereum/ethereum2.yaml"
+        regexp: '^\s{2}in_progress:.*'
+        line: "  in_progress:"
+      become: yes
 
     # start node again
     - include_role:
