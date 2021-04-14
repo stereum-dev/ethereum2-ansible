@@ -4,23 +4,56 @@
   vars_files:
     - /etc/stereum/ethereum2.yaml
 
-  roles:
-    - role: stop-services
-      ignore_errors: yes
+  tasks:
+    - name: Overrule version tag if available
+      set_fact:
+        update.available: "{{ stereum_version_tag_override }}"
+      when: stereum_version_tag_override is defined
 
-    - role: git-checkout-tag
-      git_checkout_tag_git_repo_path: "{{ e2a_install_path }}"
-      git_update_pull_tag: "{{ stereum_version_tag }}"
-      skip_stashing: false
+    - name: Set update in progress
+      lineinfile:
+        path: "/etc/stereum/ethereum2.yaml"
+        regexp: '^\s{2}in_progress:.*'
+        line: "  in_progress: {{ update.available }}"
+      become: yes
 
-    - role: git-checkout-tag
-      git_checkout_tag_git_repo_path: "{{ e2ccc_install_path }}"
-      git_update_pull_tag: "{{ stereum_version_tag }}"
-      skip_stashing: false
+    - import_role:
+        name: stop-services
+      ignore_errors: true
 
-    - role: git-checkout-tag
-      git_checkout_tag_git_repo_path: "{{ e2dc_install_path }}"
-      git_update_pull_tag: "{{ network }}-{{ stereum_version_tag }}"
-      skip_stashing: false
+    - import_role:
+        name: git-checkout-tag
+      vars:
+        git_checkout_tag_git_repo_path: "{{ e2a_install_path }}"
+        git_update_pull_tag: "{{ update.available }}"
+        skip_stashing: false
+
+    - import_role:
+        name: git-checkout-tag
+      vars:
+        git_checkout_tag_git_repo_path: "{{ e2ccc_install_path }}"
+        git_update_pull_tag: "{{ update.available }}"
+        skip_stashing: false
+
+    - import_role:
+        name: git-checkout-tag
+      vars:
+        git_checkout_tag_git_repo_path: "{{ e2dc_install_path }}"
+        git_update_pull_tag: "{{ network }}-{{ update.available }}"
+        skip_stashing: false
+
+    - name: Set version tag to new version
+      lineinfile:
+        path: "/etc/stereum/ethereum2.yaml"
+        regexp: '^stereum_version_tag:.*'
+        line: "stereum_version_tag: {{ update.available }}"
+      become: yes
+
+    - name: Remove available update
+      lineinfile:
+        path: "/etc/stereum/ethereum2.yaml"
+      regexp: '^\s{2}available:.*'
+      line: "  available:"
+      become: yes
 
 # EOF
