@@ -5,7 +5,7 @@
     minute: "{{ 59 | random }}"
     job: "cd \"{{ e2a_install_path }}\" && ansible-playbook update-check.yaml"
     state: "{{ 'present' if update.unattended.check == 'true' else 'absent' }}"
-    user: "{{ stereum_user }}"
+    user: "root"
   become: yes
 
 - name: Configure unattended update
@@ -15,7 +15,7 @@
     hour: "{{ 5 | random }}" # execute updates only in the night time/very early morning
     job: "cd \"{{ e2a_install_path }}\" && ./unattended-update.sh"
     state: "{{ 'present' if update.unattended.install == 'true' else 'absent' }}"
-    user: "{{ stereum_user }}"
+    user: "root"
   become: yes
 
 # EOF
