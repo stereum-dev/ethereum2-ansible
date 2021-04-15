@@ -13,7 +13,7 @@
     - name: Check if update is running
       fail:
         msg: "Update in progress!"
-      when: update.in_progress != ""
+      when: update.in_progress | length > 0
 
     - name: Set update in progress
       lineinfile:
