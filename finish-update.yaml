@@ -32,7 +32,7 @@
         name: configure-autoupdate
 
     # update finished
-    - name: Set update in progress
+    - name: Unset update in progress
       lineinfile:
         path: "/etc/stereum/ethereum2.yaml"
         regexp: '^\s{2}in_progress:.*'
