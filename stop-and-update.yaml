@@ -10,6 +10,11 @@
         update.available: "{{ stereum_version_tag_override }}"
       when: stereum_version_tag_override is defined
 
+    - name: Check if update is running
+      fail:
+        msg: "Update in progress!"
+      when: update.in_progress != ""
+
     - name: Set update in progress
       lineinfile:
         path: "/etc/stereum/ethereum2.yaml"
