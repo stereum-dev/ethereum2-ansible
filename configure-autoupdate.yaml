@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  roles:
+    - role: write-config
+    - role: configure-autoupdate
+
+# EOF
