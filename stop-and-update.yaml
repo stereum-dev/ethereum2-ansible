@@ -7,7 +7,13 @@
   tasks:
     - name: Overrule version tag if available
       set_fact:
-        update.available: "{{ stereum_version_tag_override }}"
+        update:
+          in_progress: "{{ update.in_progress  }}"
+          lane: "{{ update.lane }}"
+          available: "{{ stereum_version_tag_override }}"
+          unattended:
+            check: "{{ update.unattended.check }}"
+            install: "{{ update.unattended.install }}"
       when: stereum_version_tag_override is defined
 
     - name: Check if update is running
