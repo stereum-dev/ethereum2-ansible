@@ -24,3 +24,8 @@
       include_role:
         name: exit-validator-keys-nimbus
       when: setup == "nimbus"
+
+    - name: exit validator account
+      include_role:
+        name: exit-validator-keys-teku
+      when: setup == "teku"  
