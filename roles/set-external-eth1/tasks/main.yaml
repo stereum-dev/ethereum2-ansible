@@ -10,9 +10,9 @@
 
 - name: Set external eth1 for lodestar
   lineinfile:
-    path: "{{ e2dc_install_path }}/docker-compose.yaml"
-    regexp: '^\s*\-\s\-\-eth1.providerUrl='
-    line: '      - --eth1.providerUrl={{ eth1_node }}'
+    path: "{{ e2dc_install_path }}/config/lodestar/beacon.yaml"
+    regexp: '^eth1.providerUrl:.*'
+    line: 'eth1.providerUrl: { eth1_node }}'
   when: setup == "lodestar" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"

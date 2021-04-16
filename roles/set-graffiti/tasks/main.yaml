@@ -22,9 +22,9 @@
 
 - name: Set graffiti for lodestar
   lineinfile:
-    path: "{{ e2dc_install_path }}/docker-compose.yaml"
-    regexp: '^\s*\-\s\-\-graffiti='
-    line: '      - --graffiti="{{ e2dc_graffiti | default("stereum.net") }}"'
+    path: "{{ e2dc_install_path }}/config/lodestar/validator.yaml"
+    regexp: '^graffiti:.*'
+    line: 'graffiti: "{{ e2dc_graffiti | default("stereum.net") }}"'
   when: setup == "lodestar"
   become: yes
   become_user: "{{ stereum_user }}"
