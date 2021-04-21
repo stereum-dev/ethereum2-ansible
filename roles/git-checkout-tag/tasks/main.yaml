@@ -14,9 +14,20 @@
   become: yes
   become_user: "{{ stereum_user }}"
 
-- name: checkout tag
+- name: checkout tag (forced)
+  shell: "git checkout -f tags/{{ git_update_pull_tag }}"
+  args:
+    chdir: "{{ git_checkout_tag_git_repo_path }}"
+  when: not skip_stashing
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: checkout tag (fail on changes)
   shell: "git checkout tags/{{ git_update_pull_tag }}"
   args:
     chdir: "{{ git_checkout_tag_git_repo_path }}"
+  when: skip_stashing
   become: yes
   become_user: "{{ stereum_user }}"
+
+# EOF
