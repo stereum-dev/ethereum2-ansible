@@ -1,0 +1,36 @@
+---
+- name: read ssh port
+  shell: "grep ^Port /etc/ssh/sshd_config | tr -dc '0-9'"
+  register: grep_ssh_port
+
+- name: set fact ssh port
+  set_fact:
+    ubuntu_common_ssh_port: "{{ grep_ssh_port.stdout }}"
+  when: grep_ssh_port.stdout|length > 0
+
+- name: set fact ssh port
+  set_fact:
+    ubuntu_common_ssh_port: 22
+  when: grep_ssh_port.stdout|length == 0
+
+- name: ufw deny all
+  ufw:
+    state: enabled
+    direction: incoming
+    policy: deny
+
+- name: ufw allow ssh
+  ufw:
+    direction: incoming
+    policy: allow
+    port: "{{ ubuntu_common_ssh_port }}"
+    proto: tcp
+
+- name: ufw limit ssh
+  ufw:
+    direction: in
+    rule: limit
+    port: "{{ ubuntu_common_ssh_port }}"
+    proto: tcp
+
+# EOF
