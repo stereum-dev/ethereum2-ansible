@@ -16,6 +16,11 @@
             install: "{{ update.unattended.install }}"
       when: stereum_version_tag_override is defined
 
+    - name: Check if update is available
+      fail:
+        msg: "No update available!"
+      when: update.available is none or update.available | length < 2
+
     - name: Check if update is running
       fail:
         msg: "Update in progress!"
