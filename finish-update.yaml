@@ -30,6 +30,8 @@
         name: set-graffiti
     - include_role:
         name: configure-autoupdate
+    - include_role:
+        name: configure-os-security
 
     # update finished
     - name: Unset update in progress
