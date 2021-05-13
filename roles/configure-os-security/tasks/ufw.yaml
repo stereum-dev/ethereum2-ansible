@@ -18,8 +18,8 @@
     state: enabled
     direction: incoming
     policy: deny
-  become: yes
-  become_flags: "-"
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
 
 - name: ufw allow ssh
   ufw:
@@ -27,8 +27,8 @@
     policy: allow
     port: "{{ ubuntu_common_ssh_port }}"
     proto: tcp
-  become: yes
-  become_flags: "-"
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
 
 - name: ufw limit ssh
   ufw:
@@ -36,7 +36,7 @@
     rule: limit
     port: "{{ ubuntu_common_ssh_port }}"
     proto: tcp
-  become: yes
-  become_flags: "-"
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
 
 # EOF
