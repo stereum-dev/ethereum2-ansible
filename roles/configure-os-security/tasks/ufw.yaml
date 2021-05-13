@@ -2,19 +2,16 @@
 - name: read ssh port
   shell: "grep ^Port /etc/ssh/sshd_config | tr -dc '0-9'"
   register: grep_ssh_port
-  become: yes
 
 - name: set fact ssh port
   set_fact:
     ubuntu_common_ssh_port: "{{ grep_ssh_port.stdout }}"
   when: grep_ssh_port.stdout|length > 0
-  become: yes
 
 - name: set fact ssh port
   set_fact:
     ubuntu_common_ssh_port: 22
   when: grep_ssh_port.stdout|length == 0
-  become: yes
 
 - name: ufw deny all
   ufw:
@@ -22,6 +19,7 @@
     direction: incoming
     policy: deny
   become: yes
+  become_flags: "-"
 
 - name: ufw allow ssh
   ufw:
@@ -30,6 +28,7 @@
     port: "{{ ubuntu_common_ssh_port }}"
     proto: tcp
   become: yes
+  become_flags: "-"
 
 - name: ufw limit ssh
   ufw:
@@ -38,5 +37,6 @@
     port: "{{ ubuntu_common_ssh_port }}"
     proto: tcp
   become: yes
+  become_flags: "-"
 
 # EOF
