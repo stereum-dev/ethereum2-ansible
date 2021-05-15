@@ -13,6 +13,10 @@
       shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/launchpad"
       when: setup != "multiclient"
 
+    - name: Set permissions for keys to be copied over
+      shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ validator_keys_path }}/keystore-*.json"
+      become: yes
+
     - name: Copy lanchpad wallet's validator keys
       shell: "cp {{ validator_keys_path }}/keystore-*.json {{ e2dc_install_path }}/launchpad"
       become: yes
