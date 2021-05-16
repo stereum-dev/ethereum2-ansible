@@ -10,6 +10,7 @@
   command: "docker-compose -f geth-prune.yaml run geth-prune"
   args:
     chdir: "{{ e2dc_install_path }}"
+  ignore_errors: yes
   become: yes
   become_user: "{{ stereum_user }}"
 
