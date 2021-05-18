@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+    - name: delete validator account
+      include_role:
+        name: delete-validator-keys-prysm
+      when: setup == "prysm"
+
+    - name: call stop-services role
+      include_role:
+        name: stop-services
+
+    - name: call start-services role
+      include_role:
+        name: start-services
+
+# EOF
+
