@@ -5,6 +5,11 @@
     - /etc/stereum/ethereum2.yaml
 
   tasks:
+    - name: call stop-services role
+      include_role:
+        name: stop-services
+      when: setup == "nimbus"    
+
     - name: delete validator account
       include_role:
         name: delete-validator-keys-prysm
@@ -14,14 +19,19 @@
       include_role:
         name: delete-validator-keys-lodestar
       when: setup == "lodestar"  
+    
+    - name: delete validator account
+      include_role:
+        name: delete-validator-keys-nimbus
+      when: setup == "nimbus"
 
     - name: call stop-services role
       include_role:
         name: stop-services
+      when: setup == "prysm" or setup == "lodestar"  
 
     - name: call start-services role
       include_role:
         name: start-services
 
 # EOF
-
