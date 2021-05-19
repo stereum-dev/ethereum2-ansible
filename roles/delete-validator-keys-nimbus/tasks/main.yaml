@@ -1,0 +1,11 @@
+- name: Run delete validators directory
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/data/nimbus/validator/validators/{{ validator_pubkey }}"
+    state: absent
+  become: yes
+
+- name: Run delete secrets file
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/data/nimbus/validator/secrets/{{ validator_pubkey }}"
+    state: absent
+  become: yes

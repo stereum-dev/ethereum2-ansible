@@ -1,0 +1,11 @@
+- name: Run delete keystores directory
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/data/lodestar/validator/keystores/{{ validator_pubkey }}"
+    state: absent
+  become: yes
+
+- name: Run delete secrets file
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/data/lodestar/validator/secrets/{{ validator_pubkey }}"
+    state: absent
+  become: yes
