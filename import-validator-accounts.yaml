@@ -16,6 +16,7 @@
 
     - name: Set permissions of import folder
       shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/launchpad"
+      become: yes
       when: setup != "multiclient"  
 
     - name: import to lighthouse
