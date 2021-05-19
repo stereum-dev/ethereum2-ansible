@@ -1,0 +1,11 @@
+- name: Run delete keystore json
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/launchpad/{{ validator_keystore }}.json"
+    state: absent
+  become: yes
+
+- name: Run delete password txt
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/launchpad/{{ validator_keystore }}.txt"
+    state: absent
+  become: yes
