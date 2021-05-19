@@ -25,10 +25,15 @@
         name: delete-validator-keys-nimbus
       when: setup == "nimbus"
 
+    - name: delete validator account
+      include_role:
+        name: delete-validator-keys-teku
+      when: setup == "teku"  
+
     - name: call stop-services role
       include_role:
         name: stop-services
-      when: setup == "prysm" or setup == "lodestar"  
+      when: setup == "prysm" or setup == "lodestar" or setup == "teku" 
 
     - name: call start-services role
       include_role:
