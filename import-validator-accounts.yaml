@@ -9,15 +9,15 @@
       include_role:
         name: stop-services
 
-    - name: Set permissions of import folder
-      shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/launchpad"
-      when: setup != "multiclient"
-
     - name: Copy lanchpad wallet's validator keys
       shell: "cp {{ validator_keys_path }}/keystore-*.json {{ e2dc_install_path }}/launchpad"
       become: yes
-      become_user: "{{ stereum_user }}"
       when: setup != "multiclient"
+
+    - name: Set permissions of import folder
+      shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/launchpad"
+      become: yes
+      when: setup != "multiclient"  
 
     - name: import to lighthouse
       include_role:
