@@ -28,12 +28,17 @@
     - name: delete validator account
       include_role:
         name: delete-validator-keys-teku
-      when: setup == "teku"  
+      when: setup == "teku" 
+    
+    - name: delete validator account
+      include_role:
+        name: delete-validator-keys-lighthouse
+      when: setup == "lighthouse"
 
     - name: call stop-services role
       include_role:
         name: stop-services
-      when: setup == "prysm" or setup == "lodestar" or setup == "teku" 
+      when: setup == "prysm" or setup == "lodestar" or setup == "teku" or setup == "lighthouse"
 
     - name: call start-services role
       include_role:
