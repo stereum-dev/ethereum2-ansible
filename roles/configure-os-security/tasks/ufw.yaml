@@ -25,7 +25,7 @@
   ufw:
     direction: incoming
     policy: allow
-    port: "{{ ubuntu_common_ssh_port }}"
+    port: "{{ ubuntu_common_ssh_port | string }}"
     proto: tcp
   environment:
     PATH: /sbin:{{ ansible_env.PATH }}
