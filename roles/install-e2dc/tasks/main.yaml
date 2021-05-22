@@ -12,6 +12,7 @@
   git:
     repo: "https://github.com/stereum-dev/ethereum2-docker-compose.git"
     dest: "{{ install_e2dc_install_path }}"
+    force: yes
   become: yes
 
 - name: Change file ownership and group of clone
