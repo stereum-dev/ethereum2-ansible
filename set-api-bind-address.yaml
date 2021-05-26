@@ -1,6 +1,5 @@
 ---
-- hosts: localhost
-  connection: local
+- hosts: stereumnodes
   vars_files:
     - /etc/stereum/ethereum2.yaml
 

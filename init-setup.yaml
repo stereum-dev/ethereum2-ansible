@@ -1,6 +1,5 @@
 ---
-- hosts: localhost
-  connection: local
+- hosts: stereumnodes
 
   tasks:
   - include_role:
