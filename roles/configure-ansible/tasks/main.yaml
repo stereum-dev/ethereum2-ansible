@@ -1,0 +1,9 @@
+---
+- name: set stereumnodes host config for control-center-cli
+  blockinfile:
+    path: "/etc/ansible/hosts"
+    backup: yes
+    block: |
+      [stereumnodes]
+      localhost    ansible_connection=local
+  become: yes
