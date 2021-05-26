@@ -1,6 +1,5 @@
 ---
-- hosts: localhost
-  connection: local
+- hosts: stereumnodes
 
   roles:
     # prepare OS and install OS packages
