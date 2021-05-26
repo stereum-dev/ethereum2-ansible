@@ -37,6 +37,7 @@
     - role: set-external-eth1
     - role: configure-autoupdate
     - role: configure-os-security
+    - role: configure-ansible
 
     # start Ethereum 2.0 node
     - role: start-services

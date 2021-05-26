@@ -31,6 +31,8 @@
         name: configure-autoupdate
     - include_role:
         name: configure-os-security
+    - include_role:
+        name: configure-ansible
 
     # update finished
     - name: Unset update in progress
