@@ -1,8 +1,8 @@
 ---
 - name: Update and upgrade apt packages
-  become: true
+  become: yes
   apt:
-    upgrade: yes
+    upgrade: 'yes' # string required
     update_cache: yes
     cache_valid_time: 3600 
   

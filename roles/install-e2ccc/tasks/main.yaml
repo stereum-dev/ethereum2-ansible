@@ -12,6 +12,7 @@
   git:
     repo: "https://github.com/stereum-dev/ethereum2-control-center-cli.git"
     dest: "{{ e2ccc_install_path }}"
+    force: yes
   become: yes
 
 - name: Change file ownership and group of clone
