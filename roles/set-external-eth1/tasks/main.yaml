@@ -82,7 +82,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/teku/beacon.yaml"
     regexp: '^eth1\-endpoint:'
-    line: 'eth1-endpoint: "{{ connectivity.eth1_nodes | join(",") }}"'
+    line: 'eth1-endpoint: ["{{ connectivity.eth1_nodes | join("\",\"") }}"]'
   when: setup == "teku" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
@@ -91,7 +91,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/teku/beacon-mc.yaml"
     regexp: '^eth1\-endpoint:'
-    line: 'eth1-endpoint: {{ connectivity.eth1_nodes | join(",") }}'
+    line: 'eth1-endpoint: ["{{ connectivity.eth1_nodes | join("\",\"") }}"]'
   when: setup == "teku" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
