@@ -1,45 +1,78 @@
 ---
+# LIGHTHOUSE
 - name: Set external eth1 for lighthouse
   lineinfile:
     path: "{{ e2dc_install_path }}/config/lighthouse/beacon.env"
-    regexp: '^ETH1_NODE='
-    line: 'ETH1_NODE={{ eth1_node }}'
+    regexp: '^ETH1_NODES='
+    line: 'ETH1_NODES={{ connectivity.eth1_nodes.valueOf() }}'
   when: setup == "lighthouse" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
 
+# LODESTAR
 - name: Set external eth1 for lodestar
   lineinfile:
     path: "{{ e2dc_install_path }}/config/lodestar/beacon.yaml"
     regexp: '^eth1.providerUrl:.*'
-    line: 'eth1.providerUrl: {{ eth1_node }}'
+    line: 'eth1.providerUrl: {{ connectivity.eth1_nodes.0 }}'
   when: setup == "lodestar" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
 
+# NIMBUS
 - name: Set external eth1 for nimbus
   lineinfile:
     path: "{{ e2dc_install_path }}/docker-compose.yaml"
     regexp: '^\s*\-\s\-\-web3-url='
-    line: '      - --web3-url={{ eth1_node }}'
+    line: '      - --web3-url={{ connectivity.eth1_nodes.valueOf() }}'
   when: setup == "nimbus" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
 
-- name: Set external eth1 for prysm
+# PRYSM no-geth
+- name: Set external eth1 for prysm (no-geth)
   lineinfile:
     path: "{{ e2dc_install_path }}/config/prysm/beacon-no-geth.yaml"
     regexp: '^http\-web3provider:'
-    line: 'http-web3provider: "{{ eth1_node }}"'
+    line: 'http-web3provider: "{{ connectivity.eth1_nodes.0 }}"'
   when: setup == "prysm" and setup_override == "beacon-validator"
   become: yes
   become_user: "{{ stereum_user }}"
 
+- name: Set external eth1 fallback for prysm (no-geth)
+  lineinfile:
+    path: "{{ e2dc_install_path }}/config/prysm/beacon-no-geth.yaml"
+    regexp: '^fallback\-web3provider:'
+    line: 'fallback-web3provider: {{ connectivity.eth1_nodes.valueOf() }}'
+  when: setup == "prysm" and setup_override == "beacon-validator"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+# PRYSM with geth
+- name: Set external eth1 for prysm (with geth)
+  lineinfile:
+    path: "{{ e2dc_install_path }}/config/prysm/beacon.yaml"
+    regexp: '^http\-web3provider:'
+    line: 'http-web3provider: "{{ connectivity.eth1_nodes.0 }}"'
+  when: setup == "prysm" and setup_override == "beacon-validator"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Set external eth1 fallback for prysm (with geth)
+  lineinfile:
+    path: "{{ e2dc_install_path }}/config/prysm/beacon.yaml"
+    regexp: '^fallback\-web3provider:'
+    line: 'fallback-web3provider: {{ connectivity.eth1_nodes.valueOf() }}'
+  when: setup == "prysm" and setup_override == "beacon-validator"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+# TEKU
 - name: Set external eth1 for teku
   lineinfile:
     path: "{{ e2dc_install_path }}/config/teku/beacon.yaml"
     regexp: '^eth1\-endpoint:'
-    line: 'eth1-endpoint: "{{ eth1_node }}"'
+    line: 'eth1-endpoint: "{{ eth1_nodes.valueOf() }}"'
   when: setup == "teku" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
@@ -48,7 +81,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/teku/beacon-mc.yaml"
     regexp: '^eth1\-endpoint:'
-    line: 'eth1-endpoint: "{{ eth1_node }}"'
+    line: 'eth1-endpoint: {{ eth1_nodes.valueOf() }}'
   when: setup == "teku" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
