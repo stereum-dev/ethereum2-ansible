@@ -20,14 +20,24 @@
   become_user: "{{ stereum_user }}"
 
 # NIMBUS
-- name: Set external eth1 for nimbus
+- name: Remove all external eth1 for nimbus
   lineinfile:
     path: "{{ e2dc_install_path }}/docker-compose.yaml"
-    regexp: '^\s*\-\s\-\-web3-url='
-    line: '      - --web3-url={{ connectivity.eth1_nodes | join(",") }}'
+    regexp: '^\s*\-\s\-\-web3-url=.*'
+    state: absent
   when: setup == "nimbus" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
+
+- name: Add external eth1 for nimbus in order
+  lineinfile:
+    path: "{{ e2dc_install_path }}/docker-compose.yaml"
+    insertbefore: '^\s*\-\s\-\-graffiti.*'
+    line: '      - --web3-url={{ item }}'
+  when: setup == "nimbus" and setup_override == "no-geth"
+  become: yes
+  become_user: "{{ stereum_user }}"
+  with_items: "{{ connectivity.eth1_nodes }}"
 
 # PRYSM no-geth
 - name: Set external eth1 for prysm (no-geth)
