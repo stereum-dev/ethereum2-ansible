@@ -20,7 +20,7 @@ update:
 
 # network connectivity settings
 connectivity:
-  eth1_nodes: {{ connectivity.eth1_nodes | default( eth1_node | default('')) }}
+  eth1_nodes: {{ connectivity.eth1_nodes | default( '[\'' + eth1_node | default('https://geth:8545') + '\']' ) }}
 
 # mapping table (key, value) with network name as key and branch name as value
 networks:
