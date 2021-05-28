@@ -4,7 +4,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/lighthouse/beacon.env"
     regexp: '^ETH1_NODES='
-    line: 'ETH1_NODES={{ connectivity.eth1_nodes.valueOf() }}'
+    line: 'ETH1_NODES={{ connectivity.eth1_nodes | join(",") }}'
   when: setup == "lighthouse" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
@@ -24,7 +24,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/docker-compose.yaml"
     regexp: '^\s*\-\s\-\-web3-url='
-    line: '      - --web3-url={{ connectivity.eth1_nodes.valueOf() }}'
+    line: '      - --web3-url={{ connectivity.eth1_nodes | join(",") }}'
   when: setup == "nimbus" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
@@ -43,7 +43,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/prysm/beacon-no-geth.yaml"
     regexp: '^fallback\-web3provider:'
-    line: 'fallback-web3provider: {{ connectivity.eth1_nodes.valueOf() }}'
+    line: 'fallback-web3provider: {{ connectivity.eth1_nodes | join(",") }}'
   when: setup == "prysm" and setup_override == "beacon-validator"
   become: yes
   become_user: "{{ stereum_user }}"
@@ -62,7 +62,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/prysm/beacon.yaml"
     regexp: '^fallback\-web3provider:'
-    line: 'fallback-web3provider: {{ connectivity.eth1_nodes.valueOf() }}'
+    line: 'fallback-web3provider: {{ connectivity.eth1_nodes | join(",") }}'
   when: setup == "prysm" and setup_override == "beacon-validator"
   become: yes
   become_user: "{{ stereum_user }}"
@@ -72,7 +72,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/teku/beacon.yaml"
     regexp: '^eth1\-endpoint:'
-    line: 'eth1-endpoint: "{{ eth1_nodes.valueOf() }}"'
+    line: 'eth1-endpoint: "{{ connectivity.eth1_nodes | join(",") }}"'
   when: setup == "teku" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
@@ -81,7 +81,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/teku/beacon-mc.yaml"
     regexp: '^eth1\-endpoint:'
-    line: 'eth1-endpoint: {{ eth1_nodes.valueOf() }}'
+    line: 'eth1-endpoint: {{ connectivity.eth1_nodes | join(",") }}'
   when: setup == "teku" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
