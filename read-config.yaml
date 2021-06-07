@@ -1,0 +1,10 @@
+---
+- hosts: stereumnodes
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+    - name: Read config file
+      shell: cat /etc/stereum/ethereum2.yaml
+
+# EOF
