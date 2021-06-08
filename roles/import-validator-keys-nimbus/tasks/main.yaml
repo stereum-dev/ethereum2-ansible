@@ -8,6 +8,8 @@
 - name: Install pexpect
   pip:
     name: pexpect
+  vars:
+    ansible_python_interpreter: /bin/python3
 
 - name: Set correct permissions
   ansible.builtin.file:
@@ -24,6 +26,8 @@
       (?i)password: "{{ validator_password }}"
   args:
     chdir: "{{ e2dc_install_path }}"
+  vars:
+    ansible_python_interpreter: /bin/python3
   become: yes
   become_user: "{{ stereum_user }}"
 

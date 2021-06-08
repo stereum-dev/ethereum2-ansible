@@ -8,10 +8,18 @@
       include_role:
         name: stop-services
 
+    - name: Create valildator keys
+      copy:
+        dest: "{{ e2dc_install_path }}/launchpad/{{ item.name }}"
+        content: "{{ item.content }}"
+      become: yes
+      with_items: "{{validator_keys}}"
+      when: validator_keys is defined
+
     - name: Copy lanchpad wallet's validator keys
       shell: "cp {{ validator_keys_path }}/keystore-*.json {{ e2dc_install_path }}/launchpad"
       become: yes
-      when: setup != "multiclient"
+      when: setup != "multiclient" and validator_keys is not defined
 
     - name: Set permissions of import folder
       shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/launchpad"

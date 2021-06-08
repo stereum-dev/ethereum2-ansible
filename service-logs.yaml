@@ -1,0 +1,10 @@
+---
+- hosts: stereumnodes
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+    - name: Get service logs
+      shell: "docker logs --tail=1000 {{ stereum_service }} | sed -r 's/\\x1B\\[[0-9;]*[JKmsu]//g'"
+
+# EOF

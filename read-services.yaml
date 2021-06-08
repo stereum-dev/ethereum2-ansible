@@ -1,0 +1,15 @@
+---
+- hosts: stereumnodes
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+    - name: Get services
+      docker_compose:
+        project_src: "{{ e2dc_install_path }}"
+        recreate: never
+        services: "non-existing-services" # must be set so no changes will be done
+      vars:
+        ansible_python_interpreter: /bin/python3
+
+# EOF
