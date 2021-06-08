@@ -33,6 +33,8 @@
         name: configure-os-security
     - include_role:
         name: configure-ansible
+    - include_role:
+        name: remove-tmp-password-prysm    
 
     # update finished
     - name: Unset update in progress
@@ -40,10 +42,10 @@
         path: "/etc/stereum/ethereum2.yaml"
         regexp: '^\s{2}in_progress:.*'
         line: "  in_progress:"
-      become: yes
+      become: yes      
 
     # start node again
     - include_role:
         name: start-services
-
+      
 # EOF
