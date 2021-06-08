@@ -24,6 +24,13 @@
       fail:
         msg: "Update in progress!"
       when: update.in_progress is not none and update.in_progress | length > 0
+    
+    - name: Copy wallet password to temp file
+      ansible.builtin.copy:
+        src: "{{ e2dc_install_path }}/data/prysm/validator/passwords/wallet-password"
+        dest: /etc/stereum/prysm-wallet-password.tmp
+      become: yes
+      when: setup == "prysm"
 
     - name: Set update in progress
       lineinfile:

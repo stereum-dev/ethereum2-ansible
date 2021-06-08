@@ -1,0 +1,15 @@
+---
+- name: Copy temp password to prysm's wallet-password
+  ansible.builtin.copy:
+    src: /etc/stereum/prysm-wallet-password.tmp
+    dest: "{{ e2dc_install_path }}/data/prysm/validator/passwords/wallet-password"
+  become: yes
+  when: setup == "prysm"
+
+- name: Remove password temp file
+  ansible.builtin.file:
+    path: /etc/stereum/prysm-wallet-password.tmp
+    state: absent
+  become: yes  
+
+# EOF
