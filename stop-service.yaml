@@ -1,0 +1,15 @@
+---
+- hosts: stereumnodes
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+    - name: Stop specific service
+      docker_compose:
+        project_src: "{{ e2dc_install_path }}"
+        services: "{{ stereum_service }}"
+        stopped: yes
+      vars:
+        ansible_python_interpreter: /bin/python3
+
+# EOF
