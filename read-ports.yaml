@@ -1,0 +1,13 @@
+---
+- hosts: stereumnodes
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+  - name: Get information of docker containers
+    community.docker.docker_host_info:
+      containers: yes
+    vars:
+      ansible_python_interpreter: /bin/python3
+
+# EOF
