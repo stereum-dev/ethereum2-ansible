@@ -8,7 +8,7 @@
     mode: 644
   become: yes
 
-- name:
+- name: Make sure install_path is set
   set_fact:
     install_path: "/opt/dummy" # this is a dummy value, it should never be used
   when: install_path is not defined
