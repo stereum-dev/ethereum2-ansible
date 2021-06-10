@@ -1,0 +1,28 @@
+---
+- hosts: stereumnodes
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+    - name: Apply new ethereum 1 urls to config
+      set_fact:
+        connectivity:
+          eth1_nodes: "{{ eth1_nodes_updated }}"
+    
+    - name: Write configuration
+      include_role:
+        name: write-config
+
+    - name: Stop services
+      include_role:
+        name: stop-services
+
+    - name: Apply new ethereum 1 nodes to setup
+      include_role:
+        name: set-external-eth1
+
+    - name: Start services again
+      include_role:
+        name: start-services
+
+# EOF
