@@ -1,0 +1,12 @@
+---
+- hosts: stereumnodes
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+  - name: Check latest update of selected lane
+    shell: "./unattended-update.sh"
+    args:
+      chdir: "{{ e2a_install_path }}"
+
+# EOF
