@@ -8,7 +8,27 @@
       include_role:
         name: stop-services
 
-    - name: Create valildator keys
+    - name: Get imported keys in variable
+      shell: "sudo basename -s .json $(find -name 'keystore-*.json')"
+      args:
+        chdir: "{{ e2dc_install_path }}/launchpad"
+      register: imported_key
+      ignore_errors: yes
+      when: setup == "teku"
+
+    - name: Get importing keys in variable
+      shell: "sudo basename -s .json $(find -name 'keystore-*.json')"
+      args:
+        chdir: "{{ validator_keys_path }}"
+      register: importing_key
+      when: setup == "teku"
+
+    - fail:
+        msg: 'Choosen account is already imported'
+      with_items: '{{importing_key.stdout_lines}}'
+      when: item in imported_key.stdout_lines and setup == "teku"    
+
+    - name: Create validator keys
       copy:
         dest: "{{ e2dc_install_path }}/launchpad/{{ item.name }}"
         content: "{{ item.content }}"
@@ -59,5 +79,35 @@
     - name: call start-services role
       include_role:
         name: start-services
+
+    - name: Pause for 1 minutes to build beacon log
+      pause:
+        minutes: 1
+      when: setup == "teku"
+
+    - name: Get beacon log in reg_variable
+      shell: "docker-compose logs --tail=100 beacon"
+      args:
+        chdir: "{{ e2dc_install_path }}"
+      register: validator_log
+      when: setup == "teku"
+
+    - name: Remove keystores files from launchpad
+      file:
+        path: "{{ e2dc_install_path }}/launchpad/{{item}}.json"
+        state: absent
+      with_items: '{{importing_key.stdout_lines}}'
+      when: validator_log.stdout is search('Failed to decrypt keystore') and setup == "teku"
+
+    - name: Remove password files from launchpad
+      file:
+        path: "{{ e2dc_install_path }}/launchpad/{{item}}.txt"
+        state: absent
+      with_items: '{{importing_key.stdout_lines}}'
+      when: validator_log.stdout is search('Failed to decrypt keystore') and setup == "teku"
+
+    - fail:
+        msg: 'Incorrect password for account'
+      when: validator_log.stdout is search('Failed to decrypt keystore') and setup == "teku" 
 
 # EOF
