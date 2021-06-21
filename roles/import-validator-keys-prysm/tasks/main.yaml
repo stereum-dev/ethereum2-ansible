@@ -9,9 +9,16 @@
   pip:
     name: pexpect
 
+- name: get existing wallet password
+  command: "cat {{ e2dc_install_path }}//data/prysm/validator/passwords/wallet-password"
+  register: existing_password
+  become: yes
+  become_user: "{{ stereum_user }}"
+
 - name: Generate wallet password
   shell: uuidgen
-  register: wallet_password_gen
+  register: wallet_password_gen 
+  when: existing_password.sdtout == ""
 
 - name: Set wallet password
   copy:
@@ -19,6 +26,7 @@
     dest: "{{ e2dc_install_path }}//data/prysm/validator/passwords/wallet-password"
   become: yes
   become_user: "{{ stereum_user }}"
+  when: existing_password.sdtout == ""
 
 - name: Run import
   ansible.builtin.expect:  
