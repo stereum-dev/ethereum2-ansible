@@ -26,7 +26,7 @@
     - fail:
         msg: 'Choosen account is already imported'
       with_items: '{{importing_key.stdout_lines}}'
-      when: item in imported_key.stdout_lines and setup == "teku"    
+      when: setup == "teku" and item in imported_key.stdout_lines
 
     - name: Create validator keys
       copy:
@@ -97,17 +97,17 @@
         path: "{{ e2dc_install_path }}/launchpad/{{item}}.json"
         state: absent
       with_items: '{{importing_key.stdout_lines}}'
-      when: validator_log.stdout is search('Failed to decrypt keystore') and setup == "teku"
+      when: setup == "teku" and validator_log.stdout is search('Failed to decrypt keystore')
 
     - name: Remove password files from launchpad
       file:
         path: "{{ e2dc_install_path }}/launchpad/{{item}}.txt"
         state: absent
       with_items: '{{importing_key.stdout_lines}}'
-      when: validator_log.stdout is search('Failed to decrypt keystore') and setup == "teku"
+      when: setup == "teku" and validator_log.stdout is search('Failed to decrypt keystore')
 
     - fail:
         msg: 'Incorrect password for account'
-      when: validator_log.stdout is search('Failed to decrypt keystore') and setup == "teku" 
+      when: setup == "teku" and validator_log.stdout is search('Failed to decrypt keystore') 
 
 # EOF
