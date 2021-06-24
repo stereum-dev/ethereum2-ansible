@@ -40,10 +40,10 @@
         state: absent
       become: yes  
       with_items: "{{ validator_keys }}"
-      when: setup == "teku"   
+      when: setup == "teku" and validator_keys is defined 
 
     - name: Get importing keys in variable CLI
-      shell: "sudo basename -s .json $(find -name 'keystore-*.json')"
+      shell: "basename -s .json $(find -name 'keystore-*.json')"
       args:
         chdir: "{{ validator_keys_path }}"
       register: importing_key_cli
@@ -55,20 +55,14 @@
         msg: 'Choosen account is already imported'
       become: yes  
       with_items: "{{ importing_key_web.stdout_lines }}"
-      when: 
-        validator_keys is defined and
-        item in imported_key.stdout_lines and
-        setup == "teku"
+      when: validator_keys is defined and (item in imported_key.stdout_lines and setup == "teku")
 
     - name: error cli
       fail:
         msg: 'Choosen account is already im'
       become: yes  
       with_items: "{{ importing_key_cli.stdout_lines }}"
-      when:
-        validator_keys is not defined and
-        item in imported_key.stdout_lines and
-        setup == "teku"    
+      when: validator_keys is not defined and (item in imported_key.stdout_lines and setup == "teku")    
 
     - name: Create validator keys
       copy:
@@ -142,10 +136,7 @@
         state: absent
       become: yes  
       with_items: '{{importing_key_web.stdout_lines}}'
-      when: 
-        setup == "teku" and 
-        validator_log.stdout is search('Failed to decrypt keystore') and 
-        validator_keys is defined
+      when: setup == "teku" and (validator_log.stdout is search('Failed to decrypt keystore') and validator_keys is defined)
 
     - name: Remove password files from launchpad web
       file:
@@ -153,10 +144,7 @@
         state: absent
       become: yes  
       with_items: '{{importing_key_web.stdout_lines}}'
-      when: 
-        setup == "teku" and 
-        validator_log.stdout is search('Failed to decrypt keystore') and 
-        validator_keys is defined  
+      when: setup == "teku" and (validator_log.stdout is search('Failed to decrypt keystore') and validator_keys is defined)  
 
     - name: Remove keystores files from launchpad cli
       file:
@@ -164,10 +152,7 @@
         state: absent
       become: yes  
       with_items: '{{importing_key_cli.stdout_lines}}'
-      when: 
-        setup == "teku" and 
-        validator_log.stdout is search('Failed to decrypt keystore') and 
-        validator_keys is not defined  
+      when: setup == "teku" and (validator_log.stdout is search('Failed to decrypt keystore') and validator_keys is not defined)  
 
     - name: Remove password files from launchpad cli
       file:
@@ -175,10 +160,7 @@
         state: absent
       become: yes  
       with_items: '{{importing_key_cli.stdout_lines}}'
-      when: 
-        setup == "teku" and 
-        validator_log.stdout is search('Failed to decrypt keystore') and 
-        validator_keys is not defined
+      when: setup == "teku" and (validator_log.stdout is search('Failed to decrypt keystore') and validator_keys is not defined)
 
     - fail:
         msg: 'Incorrect password for account'
