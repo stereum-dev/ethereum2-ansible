@@ -36,6 +36,7 @@
     rule: limit
     port: "{{ ubuntu_common_ssh_port | string }}"
     proto: tcp
+    delete: yes # due to issues with ssh-tunnels for control-center (python & electron)
   environment:
     PATH: /sbin:{{ ansible_env.PATH }}
 
