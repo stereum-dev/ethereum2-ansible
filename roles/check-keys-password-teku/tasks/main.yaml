@@ -1,0 +1,51 @@
+---
+- name: Pause for 1 minutes to build beacon log
+  pause:
+    minutes: 1
+  become: yes
+
+- name: Get beacon log in reg_variable
+  shell: "docker-compose logs --tail=100 beacon"
+  args:
+    chdir: "{{ e2dc_install_path }}"
+  register: validator_log
+  become: yes
+
+- name: Remove keystores files from launchpad web
+  file:
+    path: "{{ e2dc_install_path }}/launchpad/{{item}}.json"
+    state: absent
+  become: yes
+  with_items: '{{importing_key_web.stdout_lines}}'
+  when: validator_keys is defined and validator_log.stdout is search('Failed to decrypt keystore')
+
+- name: Remove password files from launchpad web
+  file:
+    path: "{{ e2dc_install_path }}/launchpad/{{item}}.txt"
+    state: absent
+  become: yes
+  with_items: '{{importing_key_web.stdout_lines}}'
+  when: validator_keys is defined and validator_log.stdout is search('Failed to decrypt keystore')
+
+- name: Remove keystores files from launchpad cli
+  file:
+    path: "{{ e2dc_install_path }}/launchpad/{{item}}.json"
+    state: absent
+  become: yes
+  with_items: '{{importing_key_cli.stdout_lines}}'
+  when: validator_keys is not defined and validator_log.stdout is search('Failed to decrypt keystore')
+
+- name: Remove password files from launchpad cli
+  file:
+    path: "{{ e2dc_install_path }}/launchpad/{{item}}.txt"
+    state: absent
+  become: yes
+  with_items: '{{importing_key_cli.stdout_lines}}'
+  when: validator_keys is not defined and validator_log.stdout is search('Failed to decrypt keystore')
+
+- fail:
+    msg: 'Incorrect password for account'
+  become: yes
+  when: validator_log.stdout is search('Failed to decrypt keystore')
+
+# EOF  
