@@ -18,7 +18,7 @@
 - name: Generate wallet password
   shell: uuidgen
   register: wallet_password_gen 
-  when: existing_password.sdtout == ""
+  when: existing_password.stdout == ""
 
 - name: Set wallet password
   copy:
@@ -26,7 +26,7 @@
     dest: "{{ e2dc_install_path }}//data/prysm/validator/passwords/wallet-password"
   become: yes
   become_user: "{{ stereum_user }}"
-  when: existing_password.sdtout == ""
+  when: existing_password.stdout == ""
 
 - name: Run import
   ansible.builtin.expect:  
