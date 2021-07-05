@@ -18,6 +18,20 @@
   become_user: "{{ stereum_user }}"
   when: setups[setup].create_account is defined
 
+- name: Get keys from launchpad in variable
+  find:
+    paths: "{{ e2dc_install_path }}/launchpad"
+    patterns: "keystore-*.json"
+  register: key_files
+  become: yes
+
+- name: Removing keys from launchpad
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ key_files.files }}"
+  become: yes
+  
 - name: error incorrect password
   fail:
     msg: "Incorrect Password!!! Please check your validator password and try it again."
