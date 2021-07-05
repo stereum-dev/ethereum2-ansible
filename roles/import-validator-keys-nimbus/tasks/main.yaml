@@ -4,12 +4,7 @@
     update_cache: yes
     name:
       - python3-pip
-
-- name: Install pexpect
-  pip:
-    name: pexpect
-  vars:
-    ansible_python_interpreter: /bin/python3
+      - expect
 
 - name: Set correct permissions
   ansible.builtin.file:

@@ -4,10 +4,7 @@
     update_cache: yes
     name:
       - python3-pip
-
-- name: Install pexpect
-  pip:
-    name: pexpect
+      - expect
 
 - name: Run import
   command: "./lighthouse_validator_import.sh \"{{ validator_password }}\""

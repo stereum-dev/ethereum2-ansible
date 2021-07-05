@@ -4,10 +4,7 @@
     update_cache: yes
     name:
       - python3-pip
-
-- name: Install pexpect
-  pip:
-    name: pexpect
+      - expect
 
 - name: get existing wallet password
   command: "cat {{ e2dc_install_path }}//data/prysm/validator/passwords/wallet-password"
