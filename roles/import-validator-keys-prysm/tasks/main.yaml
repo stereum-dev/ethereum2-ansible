@@ -7,23 +7,24 @@
       - expect
 
 - name: get existing wallet password
-  command: "cat {{ e2dc_install_path }}//data/prysm/validator/passwords/wallet-password"
+  command: "cat {{ e2dc_install_path }}/data/prysm/validator/passwords/wallet-password"
   register: existing_password
+  ignore_errors: yes
   become: yes
   become_user: "{{ stereum_user }}"
 
 - name: Generate wallet password
   shell: uuidgen
   register: wallet_password_gen 
-  when: existing_password.stdout == ""
+  when: existing_password is defined and existing_password.stdout == ""
 
 - name: Set wallet password
   copy:
     content: "{{ wallet_password_gen.stdout }}"
-    dest: "{{ e2dc_install_path }}//data/prysm/validator/passwords/wallet-password"
+    dest: "{{ e2dc_install_path }}/data/prysm/validator/passwords/wallet-password"
   become: yes
   become_user: "{{ stereum_user }}"
-  when: existing_password.stdout == ""
+  when: existing_password is defined and existing_password.stdout == ""
 
 - name: Run import  
   command: "./prysm_validator_import.sh \"{{ validator_password }}\""
