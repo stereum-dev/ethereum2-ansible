@@ -31,35 +31,47 @@
       become: yes
       when: setup != "multiclient"
 
-    - name: import to lighthouse
-      include_role:
-        name: import-validator-keys-lighthouse
-      when: setup == "lighthouse"
+    - block:
+      - name: import to lighthouse
+        include_role:
+          name: import-validator-keys-lighthouse
+        when: setup == "lighthouse"
+      ignore_errors: yes
 
-    - name: import to lodestar
-      include_role:
-        name: import-validator-keys-lodestar
-      when: setup == "lodestar"
+    - block:
+      - name: import to lodestar
+        include_role:
+          name: import-validator-keys-lodestar
+        when: setup == "lodestar"
+      ignore_errors: yes
 
-    - name: import to nimbus
-      include_role:
-        name: import-validator-keys-nimbus
-      when: setup == "nimbus"
+    - block:
+      - name: import to nimbus
+        include_role:
+          name: import-validator-keys-nimbus
+        when: setup == "nimbus"
+      ignore_errors: yes
 
-    - name: import to prysm
-      include_role:
-        name: import-validator-keys-prysm
-      when: setup == "prysm"
+    - block:
+      - name: import to prysm
+        include_role:
+          name: import-validator-keys-prysm
+        when: setup == "prysm"
+      ignore_errors: yes
 
-    - name: import to teku
-      include_role:
-        name: import-validator-keys-teku
-      when: setup == "teku"
+    - block:
+      - name: import to teku
+        include_role:
+          name: import-validator-keys-teku
+        when: setup == "teku"
+      ignore_errors: yes
 
-    - name: import to multiclient
-      include_role:
-        name: import-validator-keys-multiclient
-      when: setup == "multiclient"
+    - block:
+      - name: import to multiclient
+        include_role:
+          name: import-validator-keys-multiclient
+        when: setup == "multiclient"
+      ignore_errors: yes
 
     - name: call start-services role
       include_role:
