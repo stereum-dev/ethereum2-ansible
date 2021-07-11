@@ -15,7 +15,7 @@
     state: directory
 
 - name: Run import
-  command: "./nimbus_validator_import.sh \"{{ validator_password }}\"" 
+  shell: "./nimbus_validator_import.sh {{ validator_password | quote }}" 
   args:
     chdir: "{{ e2dc_install_path }}"
   register: import_output   
