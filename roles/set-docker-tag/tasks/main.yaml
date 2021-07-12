@@ -5,12 +5,18 @@
   when: setup == "lighthouse"
   become: yes
 
+- name: Check for portable version
+  shell: grep -Ec "^LIGHTHOUSE_DOCKER_TAG=.*-portable-\d*" "{{ e2dc_install_path }}/.env"
+  register: grep_portable_version
+  when: setup == "lighthouse"
+  become: yes
+
 - name: Switch to slower portable lighthouse
   replace:
     path: "{{ e2dc_install_path }}/.env"
     regexp: '(LIGHTHOUSE_DOCKER_TAG=v[\d\.]*)(.*)'
     replace: '\1-portable\2'
-  when: setup == "lighthouse" and grep_adx_cpu_info.stdout == "0"
+  when: setup == "lighthouse" and grep_adx_cpu_info.stdout == "0" and grep_portable_version == "0"
   become: yes
 
 # EOF
