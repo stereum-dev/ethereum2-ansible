@@ -6,25 +6,25 @@
 
 - name: Remove voting keystore path line
   ansible.builtin.lineinfile:
-    path: "{{ e2dc_install_path }}/wallets/validators/validator_definitions_test.yml"
+    path: "{{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
     regexp: '\/{{ validator_pubkey }}\/'
     state: absent
   become: yes
 
 - name: Remove related first line
-  command: sed -i 'N;s/.*\(\s*\n.*{{ validator_pubkey }}\)/\1/;P;D' validator_definitions_test.yml
+  command: sed -i 'N;s/.*\(\s*\n.*{{ validator_pubkey }}\)/\1/;P;D' validator_definitions.yml
   args:
     chdir: "{{ e2dc_install_path }}/wallets/validators/"
   become: yes
 
 - name: Remove rest of the related lines
-  command: "sed -i '/{{ validator_pubkey }}/,+3 d' validator_definitions_test.yml"
+  command: "sed -i '/{{ validator_pubkey }}/,+3 d' validator_definitions.yml"
   args:
     chdir: "{{ e2dc_install_path }}/wallets/validators/"
   become: yes
 
 - name: Remove empty lines 
-  command: "sed --in-place '/^$/d' validator_definitions_test.yml"
+  command: "sed --in-place '/^$/d' validator_definitions.yml"
   args:
     chdir: "{{ e2dc_install_path }}/wallets/validators/"
   become: yes
