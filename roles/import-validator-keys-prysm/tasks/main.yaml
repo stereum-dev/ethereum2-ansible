@@ -27,7 +27,7 @@
   when: existing_password is defined and existing_password.stdout == ""
 
 - name: Run import  
-  command: "./prysm_validator_import.sh \"{{ validator_password }}\""
+  shell: "./prysm_validator_import.sh {{ validator_password | quote }}"
   args:
     chdir: "{{ e2dc_install_path }}"
   register: import_output  
