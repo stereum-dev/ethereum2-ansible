@@ -6,7 +6,7 @@
   become: yes
 
 - name: Check for portable version
-  shell: grep -Ec "^LIGHTHOUSE_DOCKER_TAG=.*-portable-\d*" "{{ e2dc_install_path }}/.env"
+  shell: grep -Ec "^LIGHTHOUSE_DOCKER_TAG=.*-portable-\d*" "{{ e2dc_install_path }}/.env" || true
   register: grep_portable_version
   when: setup == "lighthouse"
   become: yes
