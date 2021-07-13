@@ -25,4 +25,10 @@
   become: yes
   when: "'All validators are already imported' in import_output.stdout"
 
+- name: error empty password
+  fail:
+    msg: "Password is empty!"
+  become: yes
+  when: import_output.stdout == ""
+
 # EOF
