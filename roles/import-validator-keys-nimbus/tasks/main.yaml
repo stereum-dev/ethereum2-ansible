@@ -31,4 +31,10 @@
   become: yes
   when: "'The entered password was incorrect' in import_output.stdout"
 
+- name: error empty password
+  fail:
+    msg: "Password is empty!"
+  become: yes
+  when: import_output.stdout == ""
+
 # EOF
