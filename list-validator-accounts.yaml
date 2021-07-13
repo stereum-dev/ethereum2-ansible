@@ -24,4 +24,14 @@
         name: list-validator-keys-lodestar
       when: setup == "lodestar"
 
+    - name: List accounts lighthouse
+      include_role:
+        name: list-validator-keys-lighthouse
+      when: setup == "lighthouse"
+
+    - name: List accounts nimbus
+      include_role:
+        name: list-validator-keys-nimbus
+      when: setup == "nimbus"  
+
 # EOF
