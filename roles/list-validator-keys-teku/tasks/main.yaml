@@ -12,7 +12,7 @@
   become: yes
   with_items: "{{ file_names.stdout_lines }}"
 
-- name: Get contents stdout in a variable
+- name: Get contents' stdout in a variable
   debug:
     msg: "{% set output = [] %}\
       {% for x in file_contents.results %}\
@@ -21,7 +21,7 @@
       {{output}}"
   register: all_contents
 
-- name: Create temp file for contents
+- name: Create temp file for all contents
   ansible.builtin.file:
     path: "{{ e2dc_install_path }}/launchpad/temp.txt"
     state: touch
@@ -40,7 +40,7 @@
     chdir: "{{ e2dc_install_path }}/launchpad"
   become: yes
 
-- name: Create temp file for contents
+- name: Remove temp file
   ansible.builtin.file:
     path: "{{ e2dc_install_path }}/launchpad/temp.txt"
     state: absent
