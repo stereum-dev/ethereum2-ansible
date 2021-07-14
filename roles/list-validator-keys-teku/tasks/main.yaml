@@ -1,0 +1,13 @@
+---
+- name: Get key file names
+  shell: "find '/opt/stereum/ethereum2-docker-compose/launchpad' -name '*.json'"
+  register: file_names
+  become: yes
+
+- name: Get key file contents
+  command: "cat '{{ item }}'"
+  register: file_contents
+  with_items: "{{ file_names.stdout_lines }}"
+
+# EOF
+
