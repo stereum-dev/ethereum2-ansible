@@ -34,4 +34,9 @@
         name: list-validator-keys-nimbus
       when: setup == "nimbus"  
 
+    - name: List accounts teku
+      include_role:
+        name: list-validator-keys-teku
+      when: setup == "teku"
+
 # EOF

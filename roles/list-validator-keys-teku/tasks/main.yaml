@@ -1,0 +1,49 @@
+---
+- name: Get key file names
+  shell: "find '{{ e2dc_install_path }}/launchpad' -name '*.json'"
+  args:
+    chdir: "{{ e2dc_install_path }}/launchpad"
+  register: file_names
+  become: yes
+
+- name: Get key file contents
+  command: "cat '{{ item }}'"
+  register: file_contents
+  become: yes
+  with_items: "{{ file_names.stdout_lines }}"
+
+- name: Get contents' stdout in a variable
+  debug:
+    msg: "{% set output = [] %}\
+      {% for x in file_contents.results %}\
+        {{ output.append( x.stdout) }}\
+      {% endfor %}\
+      {{output}}"
+  register: all_contents
+
+- name: Create temp file for all contents
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/launchpad/temp.txt"
+    state: touch
+    mode: u=rw,g=rw,o=rw
+  become: yes
+
+- name: Copy all contents into text file
+  copy:
+    content: "{{ all_contents }}"
+    dest: "{{ e2dc_install_path }}/launchpad/temp.txt"
+  become: yes
+
+- name: Show all contents
+  shell: "cat '{{ e2dc_install_path }}/launchpad/temp.txt'"
+  args:
+    chdir: "{{ e2dc_install_path }}/launchpad"
+  become: yes
+
+- name: Remove temp file
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/launchpad/temp.txt"
+    state: absent
+  become: yes
+
+# EOF
