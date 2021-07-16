@@ -17,7 +17,7 @@
     state: absent
   become: yes
   with_items: '{{importing_key_web.stdout_lines}}'
-  when: validator_keys is defined and validator_log.stdout is search('Failed to decrypt keystore')
+  when: validator_keys is defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))  
 
 - name: Remove password files from launchpad web
   file:
@@ -25,7 +25,7 @@
     state: absent
   become: yes
   with_items: '{{importing_key_web.stdout_lines}}'
-  when: validator_keys is defined and validator_log.stdout is search('Failed to decrypt keystore')
+  when: validator_keys is defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
 
 - name: Remove keystores files from launchpad cli
   file:
@@ -33,7 +33,7 @@
     state: absent
   become: yes
   with_items: '{{importing_key_cli.stdout_lines}}'
-  when: validator_keys is not defined and validator_log.stdout is search('Failed to decrypt keystore')
+  when: validator_keys is not defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
 
 - name: Remove password files from launchpad cli
   file:
@@ -41,11 +41,16 @@
     state: absent
   become: yes
   with_items: '{{importing_key_cli.stdout_lines}}'
-  when: validator_keys is not defined and validator_log.stdout is search('Failed to decrypt keystore')
+  when: validator_keys is not defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
 
 - fail:
     msg: 'Incorrect password for account'
   become: yes
   when: validator_log.stdout is search('Failed to decrypt keystore')
+
+- fail:
+    msg: 'Empty password'
+  become: yes
+  when: validator_log.stdout is search('Keystore password cannot be empty')
 
 # EOF  
