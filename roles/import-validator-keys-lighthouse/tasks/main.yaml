@@ -6,6 +6,18 @@
       - python3-pip
       - expect
 
+- name: Checking validator_definition is empty
+  command: "cat {{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
+  register: definition_content
+  become: yes
+
+- name:
+  file:
+    path: "{{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
+    state: absent
+  become: yes
+  when: "{{ definition_content.stdout_lines | length < 2 }}"
+
 - name: Run import
   shell: "./lighthouse_validator_import.sh {{ validator_password | quote }}"
   args:
