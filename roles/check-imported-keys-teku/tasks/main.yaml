@@ -1,11 +1,16 @@
 ---
+- name: Check the validator keys dir is empty
+  command: "ls {{ e2dc_install_path }}/launchpad"
+  register: existing_keys
+  become: yes
+
 - name: Get imported keys in variable
   shell: "basename -s .json $(find -name 'keystore-*.json')"
   args:
     chdir: "{{ e2dc_install_path }}/launchpad"
   register: imported_key
-  ignore_errors: yes
   become: yes
+  when: "{{ existing_keys.stdout_lines | length > 1 }}"
 
 - name: temporary copy of keys' name
   copy:
@@ -13,7 +18,7 @@
     content: ""
   become: yes
   with_items: "{{ validator_keys }}"
-  when: validator_keys is defined
+  when: validator_keys is defined and existing_keys.stdout_lines | length > 1
 
 - name: Get importing keys in variable web
   shell: "basename -s .json $(find -name 'keystore-*.json')"
@@ -21,7 +26,7 @@
     chdir: "{{ e2dc_install_path }}/data/consensys/teku/"
   register: importing_key_web
   become: yes
-  when: validator_keys is defined
+  when: validator_keys is defined and existing_keys.stdout_lines | length > 1
 
 - name: Remove temporary-copy
   file:
@@ -29,7 +34,7 @@
     state: absent
   become: yes
   with_items: "{{ validator_keys }}"
-  when: validator_keys is defined
+  when: validator_keys is defined and existing_keys.stdout_lines | length > 1
 
 - name: Get importing keys in variable CLI
   shell: "basename -s .json $(find -name 'keystore-*.json')"
@@ -37,20 +42,20 @@
     chdir: "{{ validator_keys_path }}"
   register: importing_key_cli
   become: yes
-  when: validator_keys is not defined
+  when: validator_keys is not defined and existing_keys.stdout_lines | length > 1
 
 - name: error web
   fail:
     msg: 'Choosen account is already imported'
   become: yes
   with_items: "{{ importing_key_web.stdout_lines }}"
-  when: validator_keys is defined and item in imported_key.stdout_lines
+  when: (validator_keys is defined and existing_keys.stdout_lines | length > 1) and item in imported_key.stdout_lines
 
 - name: error cli
   fail:
     msg: 'Choosen account is already imported cli'
   become: yes
   with_items: "{{ importing_key_cli.stdout_lines }}"
-  when: validator_keys is not defined and item in imported_key.stdout_lines
+  when: (validator_keys is not defined and existing_keys.stdout_lines | length > 1) and item in imported_key.stdout_lines
 
 # EOF  
