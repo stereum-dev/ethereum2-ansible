@@ -9,6 +9,10 @@
   pip:
     name: pexpect
 
+- name: Moving keystore backup to launchpad
+  shell: "mv {{ e2dc_install_path }}/launchpad/keystore_backup/{{ validator_keystore }} {{ e2dc_install_path }}/launchpad/"
+  become: yes
+
 - name: Run exit validator
   ansible.builtin.expect:
     command: "docker-compose -f exit-account.yaml run -e LAUNCHPADDIR='/opt/app/launchpad/{{ validator_keystore }}' exit-validator"
@@ -20,4 +24,11 @@
     chdir: "{{ e2dc_install_path }}"
   become: yes
   become_user: "{{ stereum_user }}"
+  ignore_errors: true
   when: setups[setup].exit_account is defined
+
+- name: Moving keystore file to backup
+  shell: "mv {{ e2dc_install_path }}/launchpad/{{ validator_keystore }} {{ e2dc_install_path }}/launchpad/keystore_backup"
+  become: yes
+
+# EOF  
