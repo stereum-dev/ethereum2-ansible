@@ -25,10 +25,17 @@
   become: yes
   become_user: "{{ stereum_user }}"
   ignore_errors: true
+  register: exit_output
   when: setups[setup].exit_account is defined
 
 - name: Moving keystore file to backup
   shell: "mv {{ e2dc_install_path }}/launchpad/{{ validator_keystore }} {{ e2dc_install_path }}/launchpad/keystore_backup"
   become: yes
+
+- name: error validator is exited
+  fail:
+    msg: "This validator is already exited, status: Exited and Unslashed"
+  become: yes
+  when: "'Validator status: ExitedUnslashed' in exit_output.stdout"  
 
 # EOF  
