@@ -11,12 +11,19 @@
   register: definition_content
   become: yes
 
-- name: Remove if validator_definition is empty
+- name: Remove validator_definition if it is empty
   file:
     path: "{{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
     state: absent
   become: yes
   when: "{{ definition_content.stdout_lines | length < 3 }}"
+
+- name: Remove api-token file if no validators imported
+  file:
+    path: "{{ e2dc_install_path }}/wallets/validators/api-token.txt"
+    state: absent
+  become: yes
+  when: "{{ definition_content.stdout_lines | length < 3 }}"  
 
 - name: Run import
   shell: "./lighthouse_validator_import.sh {{ validator_password | quote }}"
