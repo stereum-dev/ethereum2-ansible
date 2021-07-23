@@ -1,4 +1,16 @@
 ---
+- name: Get key file contents
+  command: "cat {{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
+  become: yes
+  ignore_errors: true
+  register: val_def_content
+
+- debug:
+    var: "{{ item }}"
+  loop: '{{ val_def_content.stdout | from_yaml_all | list }}'
+  become: yes
+  when: val_def_content is defined
+
 - name: Run list validators
   command: "ls {{ e2dc_install_path }}/wallets/validators"
   args:

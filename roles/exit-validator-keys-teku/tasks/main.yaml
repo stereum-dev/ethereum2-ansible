@@ -4,10 +4,16 @@
     name: expect
 
 - name: Run exit validator
-  script: "{{ e2dc_install_path }}/teku_validator_exit.sh \"{{ validator_keystore }}\""
+  shell: "{{ e2dc_install_path }}/teku_validator_exit.sh \"{{ validator_keystore }}\""
   args:
     chdir: "{{ e2dc_install_path }}"
   become: yes
   become_user: "{{ stereum_user }}"
   ignore_errors: yes
+  register: exit_output
   when: setups[setup].exit_account is defined
+
+- fail:
+    msg: 'Validator is not active'
+  become: yes
+  when: exit_output.stdout is search('fails process voluntary exit conditions Validator is not active')
