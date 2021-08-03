@@ -14,7 +14,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/lodestar/beacon.json"
     regexp: '^\s*"providerUrl":.*'
-    line: '        "providerUrl": {{ connectivity.eth1_nodes.0 | quote }}'
+    line: '        "providerUrl": "{{ connectivity.eth1_nodes.0 | quote }}"'
   when: setup == "lodestar" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
