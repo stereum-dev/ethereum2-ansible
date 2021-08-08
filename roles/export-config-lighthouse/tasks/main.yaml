@@ -6,11 +6,7 @@
   become: yes
 
 - name: Export keystore files
-  copy:
-    src: "{{ item }}"
-    dest: /tmp/exported-config/keystore
-  with_fileglob:
-    - "{{ e2dc_install_path }}/launchpad/keystore_backup/keystore-*.json"
+  shell: "cp {{ e2dc_install_path }}/launchpad/keystore_backup/keystore-*.json /tmp/exported-config/keystore"
   become: yes
 
 - name: Set exported config file's permission
