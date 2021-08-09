@@ -1,0 +1,46 @@
+---
+- hosts: stereumnodes
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  tasks:
+    - name: Create directory for exporting config and keystore files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /tmp/exported-config/config
+        - /tmp/exported-config/keystore
+      become: yes
+
+    - name: Export config prysm
+      include_role:
+        name: export-config-prysm
+      when: setup == "prysm"
+
+    - name: Export config lodestar
+      include_role:
+        name: export-config-lodestar
+      when: setup == "lodestar"
+
+    - name: Export config lighthouse
+      include_role:
+        name: export-config-lighthouse
+      when: setup == "lighthouse"
+
+    - name: Export config nimbus
+      include_role:
+        name: export-config-nimbus
+      when: setup == "nimbus"
+
+    - name: Export config teku
+      include_role:
+        name: export-config-teku
+      when: setup == "teku"
+
+    - name: INFO
+      debug:
+        msg: "You will find the exported configuration here: '/tmp/exported-config'"
+      become: yes          
+
+# EOF
