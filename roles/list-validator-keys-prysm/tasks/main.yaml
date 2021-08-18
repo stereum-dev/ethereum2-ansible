@@ -3,7 +3,20 @@
   shell: "docker-compose -f list-account.yaml run validator-list-accounts"
   args:
     chdir: "{{ e2dc_install_path }}"
+  ignore_errors: yes
+  register: account_list_result
   become: yes
   become_user: "{{ stereum_user }}"
+
+- name: Fail on error
+  fail:
+    msg: "{{ account_list_result.stdout }}"
+  when:
+    - account_list_result.rc != 0
+    - account_list_result.stdout is not search("no wallet found")
+
+- name: List validators
+  debug:
+    msg: "{{ account_list_result.stdout }}"
 
 # EOF
