@@ -1,10 +1,19 @@
 ---
-- name: Install pip
+- name: Install pip, expect
   apt:
     update_cache: yes
     name:
       - python3-pip
       - expect
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install pip, expect
+  yum:
+    name:
+      - python3-pip
+      - expect
+    state: latest
+  when: ansible_distribution == "CentOS"
 
 - name: Set correct permissions
   ansible.builtin.file:

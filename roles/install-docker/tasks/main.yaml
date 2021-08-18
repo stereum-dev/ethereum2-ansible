@@ -1,55 +1,11 @@
 ---
-- name: Install aptitude using apt
-  apt:
-    name: aptitude
-    state: latest
-    update_cache: yes
-    force_apt_get: yes
+- name: Docker on CentOS
+  include_tasks: docker-centos.yaml
+  when: ansible_distribution == "CentOS"
 
-- name: Remove conflicting docker packages
-  apt:
-    name: "{{ item }}"
-    state: absent
-  loop:
-    - docker-engine
-    - docker.io
-    - docker-registry
-
-- name: Install required system packages
-  apt:
-    name: "{{ item }}"
-    state: latest
-    update_cache: yes
-  loop:
-    - apt-transport-https
-    - ca-certificates
-    - curl
-    - software-properties-common
-    - python3-pip
-    - python3-docker
-    - virtualenv
-    - python3-setuptools
-    - gnupg2
-    - pass
-    - net-tools
-
-- name: Add Docker GPG apt Key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
-
-- name: Add Docker Repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu bionic stable
-    state: present
-
-- name: Update apt and install docker-ce and docker-compose
-  apt:
-    update_cache: yes
-    name:
-      - docker-ce
-      - docker-compose
-    state: latest
+- name: Docker on Ubuntu
+  include_tasks: docker-ubuntu.yaml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 - name: Generate docker's daemon.json
   template:
@@ -59,14 +15,16 @@
     group: "root"
     mode: 644
 
-- name: Enable service docker
+- name: enable service docker
   systemd:
     name: docker
     enabled: yes
     masked: no
 
-- name: Add user(s) to group docker
+- name: add stereum user to docker group
   user:
-    name: '{{ stereum_user }}'
+    name: "{{ stereum_user }}"
     groups: docker
     append: yes
+
+# EOF

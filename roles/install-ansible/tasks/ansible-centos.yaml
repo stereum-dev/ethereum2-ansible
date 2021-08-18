@@ -1,0 +1,9 @@
+---
+- name: Install ansible
+  yum:
+    name:
+      - epel-release
+      - ansible
+    state: latest
+
+# EOF
