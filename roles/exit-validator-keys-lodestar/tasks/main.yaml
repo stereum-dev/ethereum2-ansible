@@ -2,6 +2,13 @@
 - name: Install expect
   apt:
     name: expect
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install expect
+  yum:
+    name: expect
+    state: latest
+  when: ansible_distribution == "CentOS"
 
 - name: Run exit validator
   shell: "{{ e2dc_install_path }}/lodestar_validator_exit.sh \"{{ validator_pubkey }}\""
@@ -11,3 +18,5 @@
   become_user: "{{ stereum_user }}"
   ignore_errors: yes
   when: setups[setup].exit_account is defined
+
+# EOF

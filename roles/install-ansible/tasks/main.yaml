@@ -1,33 +1,10 @@
 ---
-- name: Update and upgrade apt packages
-  become: yes
-  apt:
-    upgrade: 'yes' # string required
-    update_cache: yes
-    cache_valid_time: 3600 
-  
-- name: Install software-properties-common 
-  become: yes
-  apt:
-    name: software-properties-common
-    state: present
+- name: Ansible on CentOS
+  include_tasks: ansible-centos.yaml
+  when: ansible_distribution == "CentOS"
 
-- name: add repository
-  become: yes
-  apt_repository: 
-    repo: 'ppa:ansible/ansible'
-    state: present
-
-- name: Install ansible
-  become: yes
-  apt:
-    name: ansible
-    state: present
-
-- name: Configure ansible logging
-  lineinfile:
-    path: "/etc/ansible/ansible.cfg"
-    regexp: '^#?log_path.*'
-    line: 'log_path = /var/log/ansible.log'
+- name: Ansible on Ubuntu
+  include_tasks: ansible-ubuntu.yaml
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
 # EOF

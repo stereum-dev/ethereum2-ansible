@@ -5,12 +5,12 @@
 
 - name: set fact ssh port
   set_fact:
-    ubuntu_common_ssh_port: "{{ grep_ssh_port.stdout }}"
+    common_ssh_port: "{{ grep_ssh_port.stdout }}"
   when: grep_ssh_port.stdout|length > 0
 
 - name: set fact ssh port
   set_fact:
-    ubuntu_common_ssh_port: 22
+    common_ssh_port: 22
   when: grep_ssh_port.stdout|length == 0
 
 - name: ufw deny all
@@ -25,7 +25,7 @@
   ufw:
     direction: incoming
     policy: allow
-    port: "{{ ubuntu_common_ssh_port | string }}"
+    port: "{{ common_ssh_port | string }}"
     proto: tcp
   environment:
     PATH: /sbin:{{ ansible_env.PATH }}
@@ -34,7 +34,7 @@
   ufw:
     direction: in
     rule: limit
-    port: "{{ ubuntu_common_ssh_port | string }}"
+    port: "{{ common_ssh_port | string }}"
     proto: tcp
     delete: yes # due to issues with ssh-tunnels for control-center (python & electron)
   environment:

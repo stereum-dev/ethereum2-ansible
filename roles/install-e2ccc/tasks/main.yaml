@@ -1,5 +1,5 @@
 ---
-- name: Install required system packages
+- name: Install git
   apt:
     name: "{{ item }}"
     state: latest
@@ -7,6 +7,14 @@
   loop:
     - git
   become: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Install git
+  yum:
+    name: git
+    state: latest
+  become: yes
+  when: ansible_distribution == "CentOS"
 
 - name: Clone Ethereum 2.0 control center cli
   git:
