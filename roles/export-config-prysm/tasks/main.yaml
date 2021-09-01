@@ -1,12 +1,12 @@
 ---
 - name: Export config - ethereum2.yaml file
-  shell: echo "{{ export_config_password | quote }}" | gpg -c --output /tmp/exported-config/config/exported_config.gpg --batch --yes --passphrase-fd 0 ethereum2.yaml
+  shell: echo "{{ export_config_password | quote }}" | gpg -c --output /tmp/exported-config/exported_config.gpg --batch --yes --passphrase-fd 0 ethereum2.yaml
   args:
     chdir: "/etc/stereum/"
   become: yes
 
 - name: Export keystore files
-  shell: "cp {{ e2dc_install_path }}/launchpad/keystore-*.json /tmp/exported-config/keystore"
+  shell: "cp {{ e2dc_install_path }}/launchpad/keystore-*.json /tmp/exported-config"
   become: yes
 
 - name: Set exported config file's permission
