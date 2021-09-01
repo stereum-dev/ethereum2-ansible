@@ -10,21 +10,15 @@
   unarchive:
     src: "/tmp/lighthouse-latest.tar.gz"
     dest: "{{ e2dc_install_path }}/data/sigmaprime/"
+    owner: "stereum"
+    group: "stereum"
+    remote_src: yes
   become: yes
 
 - name: Delete snapshot archive
   file:
     state: absent
     path: "/tmp/lighthouse-latest.tar.gz"
-  become: yes
-
-- name: Set correct permission and owner/group of restored snapshot
-  file:
-    path: "{{ e2dc_install_path }}/data/sigmaprime/"
-    state: directory
-    owner: "stereum"
-    group: "stereum"
-    recurse: yes
   become: yes
 
 # EOF
