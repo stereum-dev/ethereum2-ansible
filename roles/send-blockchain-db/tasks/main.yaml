@@ -1,21 +1,40 @@
 ---
-- name: Make sure sync path exists on fastsync node
+- name: Build paths
+  set_fact:
+    eth2_dbs:
+      nimbus:
+        name: "nimbus"
+        tmp_path: "/tmp/{{ network }}/nimbus"
+        www_path: "/var/www/html/{{ network }}/nimbus"
+        db_path: "/var/www/html/{{ network }}/nimbus/nimbus-{{ ansible_date_time.epoch }}.tar.gz"
+        network_files: "/tmp/{{ network }}/nimbus/beacon/beacon_node.enr"
+      lighthouse:
+        name: "lighthouse"
+        tmp_path: "/tmp/{{ network }}/lighthouse"
+        www_path: "/var/www/html/{{ network }}/lighthouse"
+        db_path: "/var/www/html/{{ network }}/lighthouse/lighthouse-{{ ansible_date_time.epoch }}.tar.gz"
+        network_files: "/tmp/{{ network }}/lighthouse/lighthouse/beacon/network"
+  when: inventory_hostname in groups['fastsyncnodes']
+
+- name: Make sure tmp path exists on fastsync node
   file:
-    path: "/tmp/lighthouse"
+    path: "{{ item.tmp_path }}"
     state: directory
+  with_items: "{{ eth2_dbs }}"
   when: inventory_hostname in groups['fastsyncnodes']
 
 - name: Make sure web path exists on fastsync node
   file:
-    path: "/var/www/html/lighthouse"
+    path: "{{ item.www_path }}"
     state: directory
     owner: "root"
     group: "root"
     mode: '0755'
+  with_items: "{{ eth2_dbs }}"
   become: yes
   when: inventory_hostname in groups['fastsyncnodes']
 
-- name: shut down docker-compose
+- name: Shut down docker-compose
   command: "docker-compose down"
   args:
     chdir: "{{ e2dc_install_path }}"
@@ -24,13 +43,19 @@
   become_user: "{{ stereum_user }}"
   when: inventory_hostname in groups['stereumnodes']
 
-- name: pushing data to fastsync node
-  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/sigmaprime/lighthouse/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:/tmp/lighthouse/"
+- name: Push data to fastsync nodes (nimbus)
+  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/nimbus/beacon/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:{{ eth2_dbs.nimbus.tmp_path }}"
   with_items: "{{ groups['fastsyncnodes'] }}"
   when: inventory_hostname in groups['stereumnodes']
   become: yes
 
-- name: start e2dc docker-compose
+- name: Push data to fastsync nodes (lighthouse)
+  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/sigmaprime/lighthouse/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:{{ eth2_dbs.lighthouse.tmp_path }}"
+  with_items: "{{ groups['fastsyncnodes'] }}"
+  when: inventory_hostname in groups['stereumnodes']
+  become: yes
+
+- name: Start e2dc docker-compose
   command: "docker-compose up -d"
   args:
     chdir: "{{ e2dc_install_path }}"
@@ -41,46 +66,46 @@
 - name: Delete network files
   file:
     state: absent
-    path: "/tmp/lighthouse/lighthouse/beacon/network"
+    path: "{{ item.network_files }}"
+  with_items: "{{ eth2_dbs }}"
   when: inventory_hostname in groups['fastsyncnodes']
   become: yes
 
-- name: generate archive name
-  set_fact:
-    lighthouse_db_path: "/var/www/html/lighthouse/lighthouse-{{ ansible_date_time.epoch }}.tar.gz"
-  when: inventory_hostname in groups['fastsyncnodes']
-
-- name: create archive
+- name: Create archives
   archive:
-    path: "/tmp/lighthouse/"
-    dest: "{{ lighthouse_db_path }}"
+    path: "{{ item.tmp_path }}"
+    dest: "{{ item.db_path }}"
+  with_items: "{{ eth2_dbs }}"
   become: yes
   when: inventory_hostname in groups['fastsyncnodes']
 
-- name: Delete synced folder
+- name: Delete synced folders
   file:
     state: absent
-    path: "/tmp/lighthouse"
+    path: "{{ item.tmp_path }}"
+  with_items: "{{ eth2_dbs }}"
   when: inventory_hostname in groups['fastsyncnodes']
   become: yes
 
-- name: set correct permissions of archive
+- name: Set correct permissions of archives
   file:
-    path: "{{ lighthouse_db_path }}"
+    path: "{{ item.db_path }}"
     owner: "root"
     group: "root"
     mode: '0644'
+  with_items: "{{ eth2_dbs }}"
   when: inventory_hostname in groups['fastsyncnodes']
   become: yes
 
-- name: Add stereum control center to local/bin
+- name: Link new archives as latest snapshots
   file:
-    src: "{{ lighthouse_db_path }}"
-    dest: "/var/www/html/lighthouse/lighthouse-latest.tar.gz"
+    src: "{{ item.db_path }}"
+    dest: "{{ item.www_path }}/{{ item.name }}-latest.tar.gz"
     owner: "root"
     group: "root"
     mode: '0644'
     state: link
+  with_items: "{{ eth2_dbs }}"
   when: inventory_hostname in groups['fastsyncnodes']
   become: yes
 
