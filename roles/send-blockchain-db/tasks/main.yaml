@@ -2,28 +2,39 @@
 - name: Build paths
   set_fact:
     eth2_dbs:
-      nimbus:
+      - 
         name: "nimbus"
         tmp_path: "/tmp/{{ network }}/nimbus"
         www_path: "/var/www/html/{{ network }}/nimbus"
         db_path: "/var/www/html/{{ network }}/nimbus/nimbus-{{ ansible_date_time.epoch }}.tar.gz"
         network_files: "/tmp/{{ network }}/nimbus/beacon/beacon_node.enr"
-      lighthouse:
+      - 
         name: "lighthouse"
         tmp_path: "/tmp/{{ network }}/lighthouse"
         www_path: "/var/www/html/{{ network }}/lighthouse"
         db_path: "/var/www/html/{{ network }}/lighthouse/lighthouse-{{ ansible_date_time.epoch }}.tar.gz"
-        network_files: "/tmp/{{ network }}/lighthouse/lighthouse/beacon/network"
-  when: inventory_hostname in groups['fastsyncnodes']
+        network_files: "/tmp/{{ network }}/lighthouse/beacon/network"
+      - 
+        name: "prysm"
+        tmp_path: "/tmp/{{ network }}/prysm"
+        www_path: "/var/www/html/{{ network }}/prysm"
+        db_path: "/var/www/html/{{ network }}/prysm/prysm-{{ ansible_date_time.epoch }}.tar.gz"
+        network_files: "/tmp/{{ network }}/prysm/beacon/metaData"
+      - 
+        name: "teku"
+        tmp_path: "/tmp/{{ network }}/teku"
+        www_path: "/var/www/html/{{ network }}/teku"
+        db_path: "/var/www/html/{{ network }}/teku/teku-{{ ansible_date_time.epoch }}.tar.gz"
+        network_files: "/tmp/{{ network }}/teku/beacon/kvstore/generated-node-key.dat"
 
-- name: Make sure tmp path exists on fastsync node
+- name: Make sure tmp path exists on fastsync nodes
   file:
     path: "{{ item.tmp_path }}"
     state: directory
   with_items: "{{ eth2_dbs }}"
   when: inventory_hostname in groups['fastsyncnodes']
 
-- name: Make sure web path exists on fastsync node
+- name: Make sure web path exists on fastsync nodes
   file:
     path: "{{ item.www_path }}"
     state: directory
@@ -44,13 +55,25 @@
   when: inventory_hostname in groups['stereumnodes']
 
 - name: Push data to fastsync nodes (nimbus)
-  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/nimbus/beacon/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:{{ eth2_dbs.nimbus.tmp_path }}"
+  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/nimbus/beacon/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:{{ eth2_dbs[0].tmp_path }}"
   with_items: "{{ groups['fastsyncnodes'] }}"
   when: inventory_hostname in groups['stereumnodes']
   become: yes
 
 - name: Push data to fastsync nodes (lighthouse)
-  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/sigmaprime/lighthouse/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:{{ eth2_dbs.lighthouse.tmp_path }}"
+  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/sigmaprime/lighthouse/lighthouse/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:{{ eth2_dbs[1].tmp_path }}"
+  with_items: "{{ groups['fastsyncnodes'] }}"
+  when: inventory_hostname in groups['stereumnodes']
+  become: yes
+
+- name: Push data to fastsync nodes (prysm)
+  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/prysm/beacon/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:{{ eth2_dbs[2].tmp_path }}"
+  with_items: "{{ groups['fastsyncnodes'] }}"
+  when: inventory_hostname in groups['stereumnodes']
+  become: yes
+
+- name: Push data to fastsync nodes (teku)
+  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/consensys/teku/beacon {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:{{ eth2_dbs[3].tmp_path }}"
   with_items: "{{ groups['fastsyncnodes'] }}"
   when: inventory_hostname in groups['stereumnodes']
   become: yes
