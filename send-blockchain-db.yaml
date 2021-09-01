@@ -1,0 +1,10 @@
+---
+- hosts: stereumnodes, fastsyncnodes
+  any_errors_fatal: true
+  vars_files:
+    - /etc/stereum/ethereum2.yaml
+
+  roles:
+    - role: send-blockchain-db
+
+# EOF

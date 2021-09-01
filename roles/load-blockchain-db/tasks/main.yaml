@@ -1,0 +1,6 @@
+---
+- name: Restore blockchain db snapshot
+  include_tasks: restore-blockchain-db.yaml
+  when: load_blockchain_db | default(false) == true
+
+# EOF
