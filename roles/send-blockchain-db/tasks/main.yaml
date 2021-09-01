@@ -1,0 +1,87 @@
+---
+- name: Make sure sync path exists on fastsync node
+  file:
+    path: "/tmp/lighthouse"
+    state: directory
+  when: inventory_hostname in groups['fastsyncnodes']
+
+- name: Make sure web path exists on fastsync node
+  file:
+    path: "/var/www/html/lighthouse"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: '0755'
+  become: yes
+  when: inventory_hostname in groups['fastsyncnodes']
+
+- name: shut down docker-compose
+  command: "docker-compose down"
+  args:
+    chdir: "{{ e2dc_install_path }}"
+  ignore_errors: yes
+  become: yes
+  become_user: "{{ stereum_user }}"
+  when: inventory_hostname in groups['stereumnodes']
+
+- name: pushing data to fastsync node
+  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/sigmaprime/lighthouse/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:/tmp/lighthouse/"
+  with_items: "{{ groups['fastsyncnodes'] }}"
+  when: inventory_hostname in groups['stereumnodes']
+  become: yes
+
+- name: start e2dc docker-compose
+  command: "docker-compose up -d"
+  args:
+    chdir: "{{ e2dc_install_path }}"
+  become: yes
+  become_user: "{{ stereum_user }}"
+  when: inventory_hostname in groups['stereumnodes']
+
+- name: Delete network files
+  file:
+    state: absent
+    path: "/tmp/lighthouse/lighthouse/beacon/network"
+  when: inventory_hostname in groups['fastsyncnodes']
+  become: yes
+
+- name: generate archive name
+  set_fact:
+    lighthouse_db_path: "/var/www/html/lighthouse/lighthouse-{{ ansible_date_time.epoch }}.tar.gz"
+  when: inventory_hostname in groups['fastsyncnodes']
+
+- name: create archive
+  archive:
+    path: "/tmp/lighthouse/"
+    dest: "{{ lighthouse_db_path }}"
+  become: yes
+  when: inventory_hostname in groups['fastsyncnodes']
+
+- name: Delete synced folder
+  file:
+    state: absent
+    path: "/tmp/lighthouse"
+  when: inventory_hostname in groups['fastsyncnodes']
+  become: yes
+
+- name: set correct permissions of archive
+  file:
+    path: "{{ lighthouse_db_path }}"
+    owner: "root"
+    group: "root"
+    mode: '0644'
+  when: inventory_hostname in groups['fastsyncnodes']
+  become: yes
+
+- name: Add stereum control center to local/bin
+  file:
+    src: "{{ lighthouse_db_path }}"
+    dest: "/var/www/html/lighthouse/lighthouse-latest.tar.gz"
+    owner: "root"
+    group: "root"
+    mode: '0644'
+    state: link
+  when: inventory_hostname in groups['fastsyncnodes']
+  become: yes
+
+# EOF
