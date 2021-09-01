@@ -61,7 +61,7 @@
   become: yes
 
 - name: Push data to fastsync nodes (lighthouse)
-  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/sigmaprime/lighthouse/lighthouse/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:{{ eth2_dbs[1].tmp_path }}"
+  command: "scp -rp -P {{ hostvars[item].ansible_port | default('22') }} {{ e2dc_install_path }}/data/sigmaprime/lighthouse/beacon/ {{ hostvars[item].ansible_user | default('root') }}@{{ hostvars[item].inventory_hostname }}:{{ eth2_dbs[1].tmp_path }}"
   with_items: "{{ groups['fastsyncnodes'] }}"
   when: inventory_hostname in groups['stereumnodes']
   become: yes
