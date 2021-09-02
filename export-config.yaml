@@ -6,11 +6,8 @@
   tasks:
     - name: Create directory for exporting config and keystore files
       ansible.builtin.file:
-        path: "{{ item }}"
+        path: /tmp/exported-config
         state: directory
-      loop:
-        - /tmp/exported-config/config
-        - /tmp/exported-config/keystore
       become: yes
 
     - name: Export config prysm
@@ -38,9 +35,26 @@
         name: export-config-teku
       when: setup == "teku"
 
+    - name: Create compressed archive of exported-config directory
+      archive:
+        path: /tmp/exported-config
+        dest: /tmp/exported-config.zip
+        format: zip  
+      become: yes  
+
+    - name: Remove uncompressed exported-config directory
+      ansible.builtin.file:
+        path: /tmp/exported-config
+        state: absent
+      become: yes  
+
+    - name: Set exported config zip file's permission
+      command: "chmod -R 755 /tmp/exported-config.zip"
+      become: yes
+
     - name: INFO
       debug:
-        msg: "You will find the exported configuration here: '/tmp/exported-config'"
+        msg: "You will find the exported configuration file here: '/tmp/exported-config.zip'"
       become: yes          
 
 # EOF
