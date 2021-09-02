@@ -1,24 +1,54 @@
 ---
-- name: Download latest blockchain snapshot
+- name: Build db list and paths
+  set_fact:
+    eth2_dbs:
+      destinations:
+        nimbus: "{{ e2dc_install_path }}/data/nimbus/"
+        lighthouse: "{{ e2dc_install_path }}/data/sigmaprime/lighthouse/"
+        prysm: "{{ e2dc_install_path }}/data/prysm/"
+        teku: "{{ e2dc_install_path }}/data/consensys/teku"
+      setups:
+        allbeacons:
+          - nimbus
+          - lighthouse
+          - prysm
+          - teku
+        lighthouse:
+          - lighthouse
+        prysm:
+          - prysm
+        multiclient:
+          - lighthouse
+          - prysm
+          - teku
+        nimbus:
+          - nimbus
+        teku:
+          - teku
+
+- name: Download latest blockchain snapshots
   get_url:
-    url: "https://fastsync.stereum.cloud/lighthouse/lighthouse-latest.tar.gz"
-    dest: "/tmp/lighthouse-latest.tar.gz"
+    url: "https://fastsync.stereum.cloud/{{ network }}/{{ item }}/{{ item }}-latest.tar.gz"
+    dest: "/tmp/{{ item }}-latest.tar.gz"
     mode: '0644'
+  with_items: "{{ eth2_dbs['setups'][setup] }}"
   become: yes
 
-- name: Deflate blockchain snapshot archive
+- name: Deflate blockchain snapshot archives
   unarchive:
-    src: "/tmp/lighthouse-latest.tar.gz"
-    dest: "{{ e2dc_install_path }}/data/sigmaprime/"
+    src: "/tmp/{{ item }}-latest.tar.gz"
+    dest: "{{ eth2_dbs['destinations'][item] }}"
     owner: "stereum"
     group: "stereum"
     remote_src: yes
+  with_items: "{{ eth2_dbs['setups'][setup] }}"
   become: yes
 
-- name: Delete snapshot archive
+- name: Delete snapshot archives
   file:
     state: absent
-    path: "/tmp/lighthouse-latest.tar.gz"
+    path: "/tmp/{{ item }}-latest.tar.gz"
+  with_items: "{{ eth2_dbs['setups'][setup] }}"
   become: yes
 
 # EOF
