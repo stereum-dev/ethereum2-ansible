@@ -52,7 +52,7 @@
   become: yes
 
 - name: Move blockchain snapshot to right place (prysm setup only)
-  command: "mv {{ e2dc_install_path }}/data/prysm/beacon/* {{ e2dc_install_path }}/data/prysm/beacon-slasher/."
+  shell: "mv {{ e2dc_install_path }}/data/prysm/beacon/* {{ e2dc_install_path }}/data/prysm/beacon-slasher/."
   become: yes
   when: setup == "prysm"
 
