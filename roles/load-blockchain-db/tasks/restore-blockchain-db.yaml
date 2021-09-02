@@ -3,10 +3,10 @@
   set_fact:
     eth2_dbs:
       destinations:
-        nimbus: "{{ e2dc_install_path }}/data/nimbus/"
-        lighthouse: "{{ e2dc_install_path }}/data/sigmaprime/lighthouse/"
-        prysm: "{{ e2dc_install_path }}/data/prysm/"
-        teku: "{{ e2dc_install_path }}/data/consensys/teku"
+        nimbus: "{{ e2dc_install_path }}/data/"
+        lighthouse: "{{ e2dc_install_path }}/data/sigmaprime/"
+        prysm: "{{ e2dc_install_path }}/data/"
+        teku: "{{ e2dc_install_path }}/data/consensys/"
       setups:
         allbeacons:
           - nimbus
@@ -50,5 +50,10 @@
     path: "/tmp/{{ item }}-latest.tar.gz"
   with_items: "{{ eth2_dbs['setups'][setup] }}"
   become: yes
+
+- name: Move blockchain snapshot to right place (prysm setup only)
+  command: "mv {{ e2dc_install_path }}/data/prysm/beacon/* {{ e2dc_install_path }}/data/prysm/beacon-slasher/."
+  become: yes
+  when: setup == "prysm"
 
 # EOF
