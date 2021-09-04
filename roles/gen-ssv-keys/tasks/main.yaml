@@ -4,7 +4,6 @@
   register: ssv_keys
   when: ssv.enabled == true
   become: yes
-  become_user: "{{ stereum_user }}"
 
 - name: Parse keys
   set_fact:
