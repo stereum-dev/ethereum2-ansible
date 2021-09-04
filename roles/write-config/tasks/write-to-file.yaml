@@ -1,0 +1,25 @@
+---
+- name: Make sure Stereum's config path exists
+  file:
+    path: "/etc/stereum"
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: 644
+  become: yes
+
+- name: Make sure install_path is set
+  set_fact:
+    install_path: "/opt/dummy" # this is a dummy value, it should never be used
+  when: install_path is not defined
+
+- name: Write Stereum's ethereum2 config
+  template:
+    src: ethereum2.yaml.j2
+    dest: "/etc/stereum/ethereum2.yaml"
+    owner: "root"
+    group: "root"
+    mode: 644
+  become: yes
+
+# EOF
