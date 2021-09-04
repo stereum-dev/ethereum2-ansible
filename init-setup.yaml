@@ -3,6 +3,9 @@
 
   tasks:
   - include_role:
+      name: gen-ssv-keys
+
+  - include_role:
       name: write-config
 
   - include_vars:
