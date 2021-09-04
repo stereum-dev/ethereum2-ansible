@@ -1,7 +1,7 @@
 ---
 - name: Generate SSV keys
   include_tasks: gen-ssv-keys.yaml
-  when: ssv.enabled == true
+  when: setup_override == "ssv-no-geth"
 
 - name: Prepare and write configuration
   include_tasks: write-to-file.yaml
