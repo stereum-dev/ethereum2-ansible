@@ -28,13 +28,15 @@
     - include_role:
         name: set-graffiti
     - include_role:
+        name: set-ssv-configs
+    - include_role:
         name: configure-autoupdate
     - include_role:
         name: configure-os-security
     - include_role:
         name: configure-ansible
     - include_role:
-        name: remove-tmp-password-prysm    
+        name: remove-tmp-password-prysm
 
     # update finished
     - name: Unset update in progress

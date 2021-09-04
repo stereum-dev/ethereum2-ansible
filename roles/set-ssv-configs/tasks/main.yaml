@@ -1,0 +1,12 @@
+---
+# LIGHTHOUSE
+- name: Set ssv sk for lighthouse
+  lineinfile:
+    path: "{{ e2dc_install_path }}/config/lighthouse/blox-ssv.yaml"
+    regexp: '^OperatorPrivateKey:'
+    line: 'OperatorPrivateKey: "{{ ssv.sk }}"'
+  when: setup == "lighthouse" and setup_override == "ssv-no-geth"
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+# EOF
