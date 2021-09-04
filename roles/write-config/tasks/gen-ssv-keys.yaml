@@ -2,7 +2,6 @@
 - name: Generate SSV network keys
   shell: "docker run -d --name=ssv_node_op_key -it 'bloxstaking/ssv-node:latest' /go/bin/ssvnode generate-operator-keys && docker logs ssv_node_op_key --follow && docker stop ssv_node_op_key && docker rm ssv_node_op_key"
   register: ssv_keys
-  when: ssv.enabled == true
   become: yes
 
 - name: Parse keys
@@ -11,6 +10,5 @@
       enabled: true
       pk: "{{ ssv_keys.stdout | regex_search('(?<=\"pk\":\\s\").*(?=\")') }}"
       sk: "{{ ssv_keys.stdout | regex_search('(?<=\"sk\":\\s\").*(?=\")') }}"
-  when: ssv.enabled == true
 
 # EOF
