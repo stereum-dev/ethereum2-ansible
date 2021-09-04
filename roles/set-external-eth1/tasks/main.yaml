@@ -5,7 +5,16 @@
     path: "{{ e2dc_install_path }}/config/lighthouse/beacon.env"
     regexp: '^ETH1_NODES='
     line: 'ETH1_NODES={{ connectivity.eth1_nodes | join(",") }}'
-  when: setup == "lighthouse" and setup_override == "no-geth"
+  when: setup == "lighthouse" and (setup_override == "no-geth" or setup_override == "ssv-no-geth")
+  become: yes
+  become_user: "{{ stereum_user }}"
+
+- name: Set external eth1 for lighthouse with ssv
+  lineinfile:
+    path: "{{ e2dc_install_path }}/config/lighthouse/blox-ssv.yaml"
+    regexp: '^  ETH1Addr:'
+    line: '  ETH1Addr: "{{ connectivity.eth1_nodes | first }}"'
+  when: setup == "lighthouse" and setup_override == "ssv-no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
 

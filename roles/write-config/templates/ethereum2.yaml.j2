@@ -18,6 +18,12 @@ update:
     check: {{ update.unattended.check | default('false') }}
     install: {{ update.unattended.install | default('false') }}
 
+# https://ssv.network/
+ssv:
+  enabled: {{ ssv.enabled | default('false') }}
+  pk: {{ ssv.pk | default('') }}
+  sk: {{ ssv.sk | default('') }}
+
 # network connectivity settings
 connectivity:
   eth1_nodes: {{ connectivity.eth1_nodes | default( '[\'' + eth1_node | default('https://geth:8545') + '\']' ) }}
