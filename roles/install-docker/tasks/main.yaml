@@ -7,14 +7,6 @@
   include_tasks: docker-ubuntu.yaml
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: Generate docker's daemon.json
-  template:
-    src: daemon.json.j2
-    dest: "/etc/docker/daemon.json"
-    owner: "root"
-    group: "root"
-    mode: 644
-
 - name: enable service docker
   systemd:
     name: docker
