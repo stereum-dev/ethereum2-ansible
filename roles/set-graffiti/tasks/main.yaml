@@ -15,7 +15,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/lighthouse/validator.env"
     regexp: '^GRAFFITI='
-    line: 'GRAFFITI="{{ e2dc_graffiti | default("stereum.net") }}"'
+    line: 'GRAFFITI={{ e2dc_graffiti | default("stereum.net") }}'
   when: setup == "lighthouse"
   become: yes
   become_user: "{{ stereum_user }}"
