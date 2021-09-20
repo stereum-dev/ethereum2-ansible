@@ -1,0 +1,32 @@
+---
+- name: Install unzip
+  apt:
+    name: unzip
+    update_cache: yes
+
+- name: Unarchive exported-config.zip file
+  ansible.builtin.unarchive:
+    src: "{{ exported_config_path }}"
+    dest: /tmp
+    remote_src: yes
+  become: yes
+
+- name: Decrypt configuration file
+  shell: echo "{{ exported_config_password | quote }}" | gpg -d --output /tmp/exported-config/ethereum2.yaml --batch --yes --passphrase-fd 0 /tmp/exported-config/exported_config.gpg
+  args:
+    chdir: "/tmp/exported-config"
+  become: yes
+
+- name: Set permission to config-file
+  shell: "chmod -R 755 /tmp/exported-config"
+  args:
+    warn: false
+  become: yes
+
+- name: Write imported config file
+  shell: "cp /tmp/exported-config/ethereum2.yaml /etc/stereum"
+  args:
+    warn: false
+  become: yes
+
+# EOF      
