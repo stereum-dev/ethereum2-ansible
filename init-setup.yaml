@@ -3,7 +3,12 @@
 
   tasks:
   - include_role:
+      name: import-config
+    when: exported_config_path is defined and exported_config_password is defined
+
+  - include_role:
       name: write-config
+    when: exported_config_path is not defined and exported_config_password is not defined  
 
   - include_vars:
       file: /etc/stereum/ethereum2.yaml
