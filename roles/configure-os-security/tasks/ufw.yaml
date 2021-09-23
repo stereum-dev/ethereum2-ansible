@@ -13,7 +13,47 @@
     common_ssh_port: 22
   when: grep_ssh_port.stdout|length == 0
 
-- name: ufw deny all
+- name: ufw allow ssh
+  ufw:
+    direction: in
+    rule: allow
+    port: "{{ common_ssh_port | string }}"
+    proto: tcp
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
+
+- name: ufw allow control-center-web (web-ui)
+  ufw:
+    direction: in
+    rule: allow
+    dest: "127.0.0.1"
+    port: "8000"
+    proto: tcp
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
+
+- name: ufw allow control-center-web (grafana)
+  ufw:
+    direction: in
+    rule: allow
+    dest: "127.0.0.1"
+    port: "3000"
+    proto: tcp
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
+
+- name: ufw allow control-center-web (prysm-ui)
+  ufw:
+    direction: in
+    rule: allow
+    dest: "127.0.0.1"
+    port: "7500"
+    proto: tcp
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
+  when: setup == "prysm"
+
+- name: ufw deny incoming
   ufw:
     state: enabled
     direction: incoming
@@ -21,23 +61,61 @@
   environment:
     PATH: /sbin:{{ ansible_env.PATH }}
 
-- name: ufw allow ssh
-  ufw:
-    direction: incoming
-    policy: allow
-    port: "{{ common_ssh_port | string }}"
-    proto: tcp
-  environment:
-    PATH: /sbin:{{ ansible_env.PATH }}
-
-- name: ufw limit ssh
+- name: ufw allow p2p ports (tcp)
   ufw:
     direction: in
-    rule: limit
-    port: "{{ common_ssh_port | string }}"
+    rule: allow
+    port: "{{ item | string }}"
     proto: tcp
-    delete: yes # due to issues with ssh-tunnels for control-center (python & electron)
   environment:
     PATH: /sbin:{{ ansible_env.PATH }}
+  with_items: "{{ setups[setup].ports.public.tcp }}"
+
+- name: ufw allow p2p ports (udp)
+  ufw:
+    direction: in
+    rule: allow
+    port: "{{ item | string }}"
+    proto: udp
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
+  with_items: "{{ setups[setup].ports.public.udp }}"
+
+- name: ufw allow internal used ports (tcp)
+  ufw:
+    direction: in
+    dest: "{{ e2dc_api_bind_address | default('127.0.0.1') }}"
+    rule: allow
+    port: "{{ item | string }}"
+    proto: tcp
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
+  with_items: "{{ setups[setup].ports.internal.tcp }}"
+  when: e2dc_api_bind_address_updated is not defined
+
+- name: ufw delete allow internal used ports (tcp)
+  ufw:
+    direction: in
+    dest: "{{ e2dc_api_bind_address | default('127.0.0.1') }}"
+    rule: allow
+    port: "{{ item | string }}"
+    proto: tcp
+    delete: yes
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
+  with_items: "{{ setups[setup].ports.internal.tcp }}"
+  when: e2dc_api_bind_address_updated is defined
+
+- name: ufw update allow internal used ports (tcp)
+  ufw:
+    direction: in
+    dest: "{{ e2dc_api_bind_address_updated }}"
+    rule: allow
+    port: "{{ item | string }}"
+    proto: tcp
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
+  with_items: "{{ setups[setup].ports.internal.tcp }}"
+  when: e2dc_api_bind_address_updated is defined
 
 # EOF
