@@ -5,6 +5,7 @@
 
   roles:
     - role: stop-services
+    - role: configure-os-security
     - role: set-api-bind-address
     - role: start-services
 
