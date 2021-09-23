@@ -80,7 +80,6 @@ setups:
           - 9000
       internal:
         tcp:
-          - 3000
           - 9090
           - 5052
           - 8545
@@ -132,7 +131,6 @@ setups:
           - 5051
           - 8920
           - 9090
-          - 3000
   nimbus:
     compose_path: nimbus-only/docker-compose.yaml
     create_account: nimbus-only/create-account.yaml
@@ -151,7 +149,6 @@ setups:
           - 8545
           - 9190
           - 9090
-          - 3000
   lodestar:
     compose_path: lodestar-only/docker-compose.yaml
     create_account: lodestar-only/create-account.yaml
@@ -171,7 +168,6 @@ setups:
           - 9596
           - 8008
           - 9090
-          - 3000
   teku:
     compose_path: teku-only/docker-compose.yaml
     exit_account: teku-only/exit-account.yaml
@@ -189,6 +185,5 @@ setups:
           - 8545
           - 5051
           - 9090
-          - 3000
 
 # EOF
