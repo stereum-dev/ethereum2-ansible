@@ -13,6 +13,14 @@
     common_ssh_port: 22
   when: grep_ssh_port.stdout|length == 0
 
+- name: ufw deny incoming
+  ufw:
+    state: enabled
+    direction: incoming
+    policy: deny
+  environment:
+    PATH: /sbin:{{ ansible_env.PATH }}
+
 - name: ufw allow ssh
   ufw:
     direction: in
@@ -52,14 +60,6 @@
   environment:
     PATH: /sbin:{{ ansible_env.PATH }}
   when: setup == "prysm"
-
-- name: ufw deny incoming
-  ufw:
-    state: enabled
-    direction: incoming
-    policy: deny
-  environment:
-    PATH: /sbin:{{ ansible_env.PATH }}
 
 - name: ufw allow p2p ports (tcp)
   ufw:
