@@ -8,10 +8,60 @@
     - git
     - build-essential
     - gcc
-    - golang
+    - wget
+    - python3-pip  
+
+- name: Install pexpect
+  pip:
+    name: pexpect     
+
+- name: Find out home directory
+  command: echo $HOME
+  register: homedir
+
+- name: Checking Go is already installed
+  stat: 
+    path: "{{ homedir.stdout}}/go"
+  register: go_check
+
+- name: Remove other version of Go if installed
+  ansible.builtin.expect:
+    command: "apt-get remove --auto-remove golang-go"
+    timeout: 10
+    responses:
+       'Do you want to continue?': "y"
+  when: go_check.stat.exists and go_check.stat.isdir
+
+- name: Remove Go directory if exists
+  ansible.builtin.file:
+    path: "{{ homedir.stdout }}/go"
+    state: absent
+  when: go_check.stat.exists and go_check.stat.isdir
+
+- name: Download and Extract Go binary in '$HOME'
+  shell: wget -c https://dl.google.com/go/go1.16.8.linux-amd64.tar.gz -O - | sudo tar -xz -C "{{ homedir.stdout }}"
+  args:
+    warn: false
+  become: yes
+
+- name: Add GO PATH in '$HOME/.profile'
+  blockinfile:
+    path: ~/.profile
+    block: |
+      if [ -d "{{ homedir.stdout }}/go/bin" ] ; then
+        PATH="$PATH:{{ homedir.stdout }}/go/bin"
+      fi
+
+- name: Source .profile
+  shell: "{{ item }}"
+  with_items:
+    - source ~/.profile
+  args:
+    executable: /bin/bash
 
 - name: Install ethdo
-  shell: GO111MODULE=on go get github.com/wealdtech/ethdo
+  shell:
+    cmd: GO111MODULE=on "{{ homedir.stdout }}/go/bin/go" get github.com/wealdtech/ethdo  
 
 - name: Generate password for wallet and account
   shell: uuidgen
@@ -29,14 +79,13 @@
     ((i=i+1))
     done
   args:
-    executable: /bin/bash
+    executable: /bin/bash  
+  become: yes 
 
 - name: Copy wallet into Stereum's wallets directory
-  command: cp -r ~/.config/ethereum2/wallets/. {{ e2dc_install_path }}/wallets
-  become: yes
-
-- name: Set permissions of wallet directory
-  shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/wallets"
+  command: "cp -r ~/.config/ethereum2/wallets/. {{ e2dc_install_path }}/wallets"
+  args:
+    warn: false
 
 - name: Put the account password into the Dirk passphrases
   ansible.builtin.copy:
@@ -60,3 +109,4 @@
   become: yes
   become_user: "{{ stereum_user }}"
 
+# EOF
