@@ -35,6 +35,11 @@
         name: export-config-teku
       when: setup == "teku"
 
+    - name: Export config multiclient
+      include_role:
+        name: export-config-multiclient
+      when: setup == "multiclient"  
+
     - name: Create compressed archive of exported-config directory
       archive:
         path: /tmp/exported-config
