@@ -14,5 +14,7 @@
       file: /etc/stereum/ethereum2.yaml
 
 - import_playbook: install.yaml
+- import_playbook: import-validator-accounts.yaml
+  when: exported_config_path is defined and validator_password is defined
 
 # EOF
