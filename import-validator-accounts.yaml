@@ -6,12 +6,12 @@
   tasks:
     - name: call stop-services role
       include_role:
-        name: stop-services
+        name: stop-services   
 
     - name: Checking imported keys of teku
       include_role:
         name: check-imported-keys-teku
-      when: setup == "teku"
+      when: setup == "teku" and exported_config_path is not defined
 
     - name: Create validator keys
       copy:
@@ -19,12 +19,17 @@
         content: "{{ item.content }}"
       become: yes
       with_items: "{{validator_keys}}"
-      when: validator_keys is defined
+      when: validator_keys is defined 
 
     - name: Copy lanchpad wallet's validator keys
       shell: "cp {{ validator_keys_path }}/keystore-*.json {{ e2dc_install_path }}/launchpad"
       become: yes
-      when: setup != "multiclient" and validator_keys is not defined
+      when: setup != "multiclient" and validator_keys_path is defined
+
+    - name: Copy lanchpad wallet's validator keys 'config-import'
+      shell: "cp /tmp/exported-config/keystore-*.json {{ e2dc_install_path }}/launchpad"
+      become: yes
+      when: exported_config_path is defined and setup != "multiclient"
 
     - name: Set permissions of import folder
       shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/launchpad"
@@ -80,6 +85,6 @@
     - name: Checking keys' password of teku
       include_role:
         name: check-keys-password-teku
-      when: setup == "teku"
+      when: setup == "teku"  
 
 # EOF  
