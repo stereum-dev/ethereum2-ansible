@@ -85,6 +85,12 @@
     - name: Checking keys' password of teku
       include_role:
         name: check-keys-password-teku
-      when: setup == "teku"  
+      when: setup == "teku" 
+
+    - name: Remove exported-config directory
+      file:
+        path: "/tmp/exported-config"
+        state: absent
+      when: validator_password is defined and exported_config_path is defined 
 
 # EOF  

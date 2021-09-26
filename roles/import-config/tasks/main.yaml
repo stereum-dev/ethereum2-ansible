@@ -29,4 +29,10 @@
     warn: false
   become: yes
 
+- name: Remove exported-config directory
+  file: 
+    path: "/tmp/exported-config" 
+    state: absent
+  when: validator_password is not defined
+
 # EOF      
