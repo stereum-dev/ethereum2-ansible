@@ -5,10 +5,5 @@
     chdir: "{{ e2dc_install_path }}"
   become: yes
   become_user: "{{ stereum_user }}"
-  when: setup != "multiclient"
 
-- name: Start services multiclient
-  shell: "./edc-up.sh"
-  args:
-    chdir: "{{ e2dc_install_path }}"
-  when: setup == "multiclient"  
+# EOF  
