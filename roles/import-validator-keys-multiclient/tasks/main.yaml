@@ -83,9 +83,13 @@
   become: yes 
 
 - name: Copy wallet into Stereum's wallets directory
-  command: "cp -r ~/.config/ethereum2/wallets/. {{ e2dc_install_path }}/wallets"
-  args:
-    warn: false
+  ansible.builtin.copy:
+    src: ~/.config/ethereum2/wallets/
+    dest: "{{ e2dc_install_path }}/wallets"
+    owner: stereum
+    group: stereum
+    mode: '0755'
+  become: yes    
 
 - name: Put the account password into the Dirk passphrases
   ansible.builtin.copy:
