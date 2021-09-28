@@ -25,14 +25,13 @@
 - name: Create compressed archive of wallet directory
   archive:
     path: /tmp/exported-config/wallet
-    dest: /tmp/exported-config/wallet.zip
-    format: zip
-    directory_mode: yes
+    dest: /tmp/exported-config/wallet.gz
+    format: gz
   become: yes  
 
 - name: Encrypt wallet.zip file
   ansible.builtin.expect:
-  command: /usr/local/bin/age/age -e -p --output /tmp/exported-config/wallet.age /tmp/exported-config/wallet.zip
+  command: /usr/local/bin/age/age -e -p --output /tmp/exported-config/wallet.age /tmp/exported-config/wallet.gz
   timeout: "300"
   responses:
      Enter passphrase: "{{ export_config_password | quote }}"
@@ -45,7 +44,7 @@
     state: absent
   with_items: 
     - /tmp/exported-config/wallet
-    - /tmp/exported-config/wallet.zip
+    - /tmp/exported-config/wallet.gz
   become: yes  
 
 - name: Set exported config dir's permission
