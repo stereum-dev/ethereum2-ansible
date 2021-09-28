@@ -29,7 +29,7 @@
     format: gz
   become: yes  
 
-- name: Encrypt wallet.zip file
+- name: Encrypt wallet.gz file
   ansible.builtin.expect:
   command: /usr/local/bin/age/age -e -p --output /tmp/exported-config/wallet.age /tmp/exported-config/wallet.gz
   timeout: "300"
