@@ -8,7 +8,7 @@
        Confirm passphrase: "{{ export_config_password | quote }}"
   become: yes  
 
-- name: Change file ownership, group and permissions
+- name: Export keystore files
   copy:
     src: "{{ item }}"
     dest: /tmp/exported-config
