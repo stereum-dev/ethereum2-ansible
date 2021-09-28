@@ -27,6 +27,7 @@
     path: /tmp/exported-config/wallet
     dest: /tmp/exported-config/wallet.zip
     format: zip
+    directory_mode: yes
   become: yes  
 
 - name: Encrypt wallet.zip file
