@@ -44,14 +44,22 @@
   when: validator_keys is not defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
 
 - name: Remove keystores files from launchpad 'import-config'
-  shell: rm "{{ e2dc_install_path }}/launchpad/*.json"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "{{ e2dc_install_path }}/launchpad/*.json"
   become: yes
   when: exported_config_path is defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
 
 - name: Remove password files from launchpad 'import-config'
-  shell: rm "{{ e2dc_install_path }}/launchpad/*.txt"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "{{ e2dc_install_path }}/launchpad/*.txt"
   become: yes
-  when: exported_config_path is defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))  
+  when: exported_config_path is defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
 
 - fail:
     msg: 'Incorrect password for account'
