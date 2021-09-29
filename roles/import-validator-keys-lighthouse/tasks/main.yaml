@@ -58,8 +58,13 @@
   become: yes
 
 - name: Copy keystore files to backup directory
-  shell: "cp {{ e2dc_install_path }}/launchpad/keystore-*.json {{ e2dc_install_path }}/launchpad/keystore_backup"
-  become: yes  
+  copy:
+    src: "{{ item }}"
+    dest: "{{ e2dc_install_path }}/launchpad/keystore_backup"
+    mode: '0755'
+  with_fileglob:
+    - "{{ e2dc_install_path }}/launchpad/keystore-*.json"
+  become: yes
 
 - name: Removing keys from launchpad
   file:
