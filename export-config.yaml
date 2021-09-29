@@ -41,10 +41,12 @@
         update_cache: yes
         name:
           - python3-pip
+      become: yes      
 
     - name: Install pexpect
       pip:
         name: pexpect  
+      become: yes  
 
     - name: Export config prysm
       include_role:
