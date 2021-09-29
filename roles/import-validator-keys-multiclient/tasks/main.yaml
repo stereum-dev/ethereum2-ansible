@@ -13,7 +13,8 @@
 
 - name: Install pexpect
   pip:
-    name: pexpect     
+    name: pexpect
+  become: yes    
   when: validator_number is defined and validator_mnemonic is defined  
 
 - name: Find out home directory
