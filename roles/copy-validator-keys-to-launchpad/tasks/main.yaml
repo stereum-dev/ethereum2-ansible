@@ -1,0 +1,40 @@
+---
+- name: Create validator keys WEB
+  copy:
+    dest: "{{ e2dc_install_path }}/launchpad/{{ item.name }}"
+    content: "{{ item.content }}"
+  become: yes
+  with_items: "{{validator_keys}}"
+  when: validator_keys is defined
+
+- name: Copy lanchpad wallet's validator keys CLI
+  copy:
+    src: "{{ item }}"
+    dest: "{{ e2dc_install_path }}/launchpad"
+    mode: '0755'
+  with_fileglob:
+    - "{{ validator_keys_path }}/keystore-*.json"
+  become: yes
+  when: setup != "multiclient" and validator_keys_path is defined
+
+- name: Copy lanchpad wallet's validator keys 'config-import'
+  copy:
+    src: "{{ item }}"
+    dest: "{{ e2dc_install_path }}/launchpad"
+    mode: '0755'
+  with_fileglob:
+    - "/tmp/exported-config/keystore-*.json"
+  become: yes
+  when: setup != "multiclient" and exported_config_path is defined
+
+- name: Set launchpad dir's permission
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/launchpad"
+    owner: "{{ stereum_user }}"
+    group: "{{ stereum_user }}"
+    recurse: true
+    mode: '0755'
+  become: yes
+  when: setup != "multiclient"
+
+# EOF  

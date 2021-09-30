@@ -8,17 +8,77 @@
     - git
     - build-essential
     - gcc
-    - golang
+    - wget
+    - python3-pip  
+
+- name: Install pexpect
+  pip:
+    name: pexpect
+  become: yes    
+  when: validator_number is defined and validator_mnemonic is defined  
+
+- name: Find out home directory
+  command: echo $HOME
+  register: homedir
+  when: validator_number is defined and validator_mnemonic is defined
+
+- name: Checking Go is already installed
+  stat: 
+    path: "{{ homedir.stdout}}/go"
+  register: go_check
+  when: validator_number is defined and validator_mnemonic is defined
+
+- name: Remove other version of Go if installed
+  ansible.builtin.expect:
+    command: "apt-get remove --auto-remove golang-go"
+    timeout: 10
+    responses:
+       'Do you want to continue?': "y"
+  when: (go_check.stat.exists and go_check.stat.isdir) and validator_mnemonic is defined
+
+- name: Remove Go directory if exists
+  ansible.builtin.file:
+    path: "{{ homedir.stdout }}/go"
+    state: absent
+  when: (go_check.stat.exists and go_check.stat.isdir) and validator_mnemonic is defined
+
+- name: Download and Extract Go binary in '$HOME'
+  shell: wget -c https://dl.google.com/go/go1.16.8.linux-amd64.tar.gz -O - | sudo tar -xz -C "{{ homedir.stdout }}"
+  args:
+    warn: false
+  become: yes
+  when: validator_number is defined and validator_mnemonic is defined
+
+- name: Add GO PATH in '$HOME/.profile'
+  blockinfile:
+    path: ~/.profile
+    block: |
+      if [ -d "{{ homedir.stdout }}/go/bin" ] ; then
+        PATH="$PATH:{{ homedir.stdout }}/go/bin"
+      fi 
+  when: validator_number is defined and validator_mnemonic is defined    
+
+- name: Source .profile
+  shell: "{{ item }}"
+  with_items:
+    - source ~/.profile
+  args:
+    executable: /bin/bash
+  when: validator_number is defined and validator_mnemonic is defined  
 
 - name: Install ethdo
-  shell: GO111MODULE=on go get github.com/wealdtech/ethdo
+  shell:
+    cmd: GO111MODULE=on "{{ homedir.stdout }}/go/bin/go" get github.com/wealdtech/ethdo 
+  when: validator_number is defined and validator_mnemonic is defined   
 
 - name: Generate password for wallet and account
   shell: uuidgen
   register: password_gen  
+  when: validator_number is defined and validator_mnemonic is defined
 
 - name: create ethdo wallet
   shell: ~/go/bin/ethdo wallet create --type=hd --mnemonic= "{{ validator_mnemonic }}" --wallet="Wallet" --wallet-passphrase="{{password_gen.stdout}}"
+  when: validator_number is defined and validator_mnemonic is defined
   
 - name: create account(s)
   shell: |
@@ -29,14 +89,29 @@
     ((i=i+1))
     done
   args:
-    executable: /bin/bash
+    executable: /bin/bash  
+  become: yes 
+  when: validator_number is defined and validator_mnemonic is defined
 
 - name: Copy wallet into Stereum's wallets directory
-  command: cp -r ~/.config/ethereum2/wallets/. {{ e2dc_install_path }}/wallets
+  ansible.builtin.copy:
+    src: ~/.config/ethereum2/wallets/
+    dest: "{{ e2dc_install_path }}/wallets"
+    owner: "{{ stereum_user }}"
+    group: "{{ stereum_user }}"
+    mode: '0755'
   become: yes
+  when: validator_number is defined and validator_mnemonic is defined  
 
-- name: Set permissions of wallet directory
-  shell: "chown -R {{ stereum_user }}:{{ stereum_user }} {{ e2dc_install_path }}/wallets"
+- name: Copy wallet into Stereum's wallets directory 'import-config'
+  ansible.builtin.copy:
+    src: /tmp/exported-config/wallet/
+    dest: "{{ e2dc_install_path }}/wallets"
+    owner: "{{ stereum_user }}"
+    group: "{{ stereum_user }}"
+    mode: '0755'
+  become: yes  
+  when: exported_config_path is defined and exported_config_password is defined
 
 - name: Put the account password into the Dirk passphrases
   ansible.builtin.copy:
@@ -44,6 +119,15 @@
     dest: "{{ e2dc_install_path }}/config/dirk/passphrases/account-passphrase.txt"
   become: yes
   become_user: "{{ stereum_user }}"
+  when: validator_number is defined and validator_mnemonic is defined
+
+- name: Put the account password into the Dirk passphrases 'import-config'
+  ansible.builtin.copy:
+    src: /tmp/exported-config/account-passphrase.txt
+    dest: "{{ e2dc_install_path }}/config/dirk/passphrases/account-passphrase.txt"
+    mode: '0755'
+  become: yes  
+  when: exported_config_path is defined and exported_config_password is defined
 
 - name: Put the wallet password into the Dirk passphrases
   ansible.builtin.copy:
@@ -51,6 +135,15 @@
     dest: "{{ e2dc_install_path }}/config/dirk/passphrases/wallet-passphrase.txt"
   become: yes
   become_user: "{{ stereum_user }}"
+  when: validator_number is defined and validator_mnemonic is defined
+
+- name: Put the wallet password into the Dirk passphrases 'import-config'
+  ansible.builtin.copy:
+    src: /tmp/exported-config/wallet-passphrase.txt
+    dest: "{{ e2dc_install_path }}/config/dirk/passphrases/wallet-passphrase.txt"
+    mode: '0755'
+  become: yes
+  when: exported_config_path is defined and exported_config_password is defined  
 
 - name: Put the wallet name into the Vouch
   ansible.builtin.replace:
@@ -60,3 +153,4 @@
   become: yes
   become_user: "{{ stereum_user }}"
 
+# EOF

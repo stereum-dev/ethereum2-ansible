@@ -4,11 +4,49 @@
     - /etc/stereum/ethereum2.yaml
 
   tasks:
+    - name: Download age
+      get_url:
+        url: https://github.com/FiloSottile/age/releases/download/v1.0.0-rc.1/age-v1.0.0-rc.1-linux-amd64.tar.gz
+        dest: /tmp/age.gz
+        mode: '0655'
+      become: yes
+
+    - name: Extract '/tmp/age.gz' to '/usr/local/bin'
+      ansible.builtin.unarchive:
+        src: /tmp/age.gz
+        dest: /usr/local/bin
+      become: yes 
+
+    - name: Remove '/tmp/age.gz' file
+      ansible.builtin.file:
+        path: /tmp/age.gz
+        state: absent
+      become: yes  
+
     - name: Create directory for exporting config and keystore files
       ansible.builtin.file:
         path: /tmp/exported-config
         state: directory
       become: yes
+
+    - name: Create directory for exporting wallet and passphrases
+      ansible.builtin.file:
+        path: /tmp/exported-config/wallet
+        state: directory
+      become: yes  
+      when: setup == "multiclient"
+
+    - name: Install pip
+      apt:
+        update_cache: yes
+        name:
+          - python3-pip
+      become: yes      
+
+    - name: Install pexpect
+      pip:
+        name: pexpect  
+      become: yes  
 
     - name: Export config prysm
       include_role:
@@ -35,6 +73,11 @@
         name: export-config-teku
       when: setup == "teku"
 
+    - name: Export config multiclient
+      include_role:
+        name: export-config-multiclient
+      when: setup == "multiclient"  
+
     - name: Create compressed archive of exported-config directory
       archive:
         path: /tmp/exported-config
@@ -49,8 +92,10 @@
       become: yes  
 
     - name: Set exported config zip file's permission
-      command: "chmod -R 755 /tmp/exported-config.zip"
-      become: yes
+      ansible.builtin.file:
+        path: /tmp/exported-config.zip
+        mode: '755'
+      become: yes  
 
     - name: INFO
       debug:

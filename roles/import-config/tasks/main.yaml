@@ -4,29 +4,93 @@
     name: unzip
     update_cache: yes
 
-- name: Unarchive exported-config.zip file
+- name: Download age
+  get_url:
+    url: https://github.com/FiloSottile/age/releases/download/v1.0.0-rc.1/age-v1.0.0-rc.1-linux-amd64.tar.gz
+    dest: /tmp/age.gz
+    mode: '0655'
+  become: yes
+
+- name: Extract '/tmp/age.gz' to '/usr/local/bin'
+  ansible.builtin.unarchive:
+    src: /tmp/age.gz
+    dest: /usr/local/bin
+  become: yes
+
+- name: Remove '/tmp/age.gz' file
+  ansible.builtin.file:
+    path: /tmp/age.gz
+    state: absent
+  become: yes    
+
+- name: Unzip exported-config.zip file
   ansible.builtin.unarchive:
     src: "{{ exported_config_path }}"
     dest: /tmp
     remote_src: yes
   become: yes
 
-- name: Decrypt configuration file
-  shell: echo "{{ exported_config_password | quote }}" | gpg -d --output /tmp/exported-config/ethereum2.yaml --batch --yes --passphrase-fd 0 /tmp/exported-config/exported_config.gpg
-  args:
-    chdir: "/tmp/exported-config"
-  become: yes
+- name: Decrypt exported-config.age file
+  ansible.builtin.expect:
+    command: /usr/local/bin/age/age -d --output /tmp/exported-config/ethereum2.yaml /tmp/exported-config/exported_config.age
+    timeout: "300"
+    responses:
+       Enter passphrase: "{{ exported_config_password | quote }}"
+  become: yes  
 
-- name: Set permission to config-file
-  shell: "chmod -R 755 /tmp/exported-config"
-  args:
-    warn: false
+- name: Decrypt wallet.age file
+  ansible.builtin.expect:
+    command: /usr/local/bin/age/age -d --output /tmp/exported-config/wallet.gz /tmp/exported-config/wallet.age
+    timeout: "300"
+    responses:
+       Enter passphrase: "{{ exported_config_password | quote }}"
   become: yes
+  when: setup == "multiclient"
+
+- name: Unarchive wallet.gz
+  ansible.builtin.unarchive:
+    src: /tmp/exported-config/wallet.gz
+    dest: /tmp/exported-config
+  become: yes
+  when: setup == "multiclient"
+
+- name: Copy password files into exported-config directory
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /tmp/exported-config
+    mode: '0755'
+  with_fileglob:
+    - "/tmp/exported-config/wallet/*-passphrase.txt"  
+  become: yes
+  when: setup == "multiclient"
+
+- name: Remove password files from wallet dir
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "/tmp/exported-config/wallet/*-passphrase.txt"  
+  become: yes
+  when: setup == "multiclient"     
+
+- name: Set exported-config dir's permission
+  ansible.builtin.file:
+    path: /tmp/exported-config
+    mode: '755'
+    recurse: yes
+  become: yes  
 
 - name: Write imported config file
-  shell: "cp /tmp/exported-config/ethereum2.yaml /etc/stereum"
-  args:
-    warn: false
-  become: yes
+  ansible.builtin.copy:
+    src: /tmp/exported-config/ethereum2.yaml
+    dest: /etc/stereum
+    mode: '0755'
+  become: yes  
+
+- name: Remove exported-config directory
+  file: 
+    path: "/tmp/exported-config" 
+    state: absent
+  when: validator_password is not defined
 
 # EOF      

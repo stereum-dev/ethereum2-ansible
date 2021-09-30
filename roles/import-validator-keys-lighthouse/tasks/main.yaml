@@ -19,20 +19,21 @@
   command: "cat {{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
   register: definition_content
   become: yes
+  when: exported_config_path is not defined
 
 - name: Remove validator_definition if it is empty
   file:
     path: "{{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
     state: absent
   become: yes
-  when: "{{ definition_content.stdout_lines | length < 3 }}"
+  when: "{{ definition_content.stdout_lines | length < 3 }}" and exported_config_path is not defined
 
 - name: Remove api-token file if no validators imported
   file:
     path: "{{ e2dc_install_path }}/wallets/validators/api-token.txt"
     state: absent
   become: yes
-  when: "{{ definition_content.stdout_lines | length < 3 }}"  
+  when: "{{ definition_content.stdout_lines | length < 3 }}" and exported_config_path is not defined 
 
 - name: Run import
   shell: "./lighthouse_validator_import.sh {{ validator_password | quote }}"
@@ -57,8 +58,13 @@
   become: yes
 
 - name: Copy keystore files to backup directory
-  shell: "cp {{ e2dc_install_path }}/launchpad/keystore-*.json {{ e2dc_install_path }}/launchpad/keystore_backup"
-  become: yes  
+  copy:
+    src: "{{ item }}"
+    dest: "{{ e2dc_install_path }}/launchpad/keystore_backup"
+    mode: '0755'
+  with_fileglob:
+    - "{{ e2dc_install_path }}/launchpad/keystore-*.json"
+  become: yes
 
 - name: Removing keys from launchpad
   file:

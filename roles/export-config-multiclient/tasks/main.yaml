@@ -1,0 +1,57 @@
+---
+- name: Export config - ethereum2.yaml file
+  ansible.builtin.expect:
+    command: /usr/local/bin/age/age -e -p --output /tmp/exported-config/exported_config.age /etc/stereum/ethereum2.yaml
+    timeout: "300"
+    responses:
+       Enter passphrase: "{{ export_config_password | quote }}"
+       Confirm passphrase: "{{ export_config_password | quote }}"
+  become: yes
+
+- name: Export ethdo wallet
+  ansible.builtin.copy:
+    src: "{{ e2dc_install_path }}/wallets/"
+    dest: /tmp/exported-config/wallet
+    mode: '0755'
+  become: yes  
+
+- name: Export wallet's passphrases 
+  ansible.builtin.copy:
+    src: "{{ e2dc_install_path }}/config/dirk/passphrases/"
+    dest: /tmp/exported-config/wallet
+    mode: '0755'
+  become: yes  
+
+- name: Create compressed archive of wallet directory
+  archive:
+    path: /tmp/exported-config/wallet
+    dest: /tmp/exported-config/wallet.gz
+    format: gz
+  become: yes  
+
+- name: Encrypt wallet.gz file
+  ansible.builtin.expect:
+  command: /usr/local/bin/age/age -e -p --output /tmp/exported-config/wallet.age /tmp/exported-config/wallet.gz
+  timeout: "300"
+  responses:
+     Enter passphrase: "{{ export_config_password | quote }}"
+     Confirm passphrase: "{{ export_config_password | quote }}"
+  become: yes  
+
+- name: Remove wallet directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items: 
+    - /tmp/exported-config/wallet
+    - /tmp/exported-config/wallet.gz
+  become: yes  
+
+- name: Set exported config dir's permission
+  ansible.builtin.file:
+    path: /tmp/exported-config
+    mode: '755'
+    recurse: yes
+  become: yes
+
+# EOF
