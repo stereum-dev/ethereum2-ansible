@@ -12,6 +12,7 @@
   ansible.builtin.copy:
     src: "{{ e2dc_install_path }}/wallets/"
     dest: /tmp/exported-config/wallet
+    remote_src: yes
     mode: '0755'
   become: yes  
 
@@ -19,6 +20,7 @@
   ansible.builtin.copy:
     src: "{{ e2dc_install_path }}/config/dirk/passphrases/"
     dest: /tmp/exported-config/wallet
+    remote_src: yes
     mode: '0755'
   become: yes  
 
@@ -31,11 +33,11 @@
 
 - name: Encrypt wallet.gz file
   ansible.builtin.expect:
-  command: /usr/local/bin/age/age -e -p --output /tmp/exported-config/wallet.age /tmp/exported-config/wallet.gz
-  timeout: "300"
-  responses:
-     Enter passphrase: "{{ export_config_password | quote }}"
-     Confirm passphrase: "{{ export_config_password | quote }}"
+    command: /usr/local/bin/age/age -e -p --output /tmp/exported-config/wallet.age /tmp/exported-config/wallet.gz
+    timeout: "300"
+    responses:
+       Enter passphrase: "{{ export_config_password | quote }}"
+       Confirm passphrase: "{{ export_config_password | quote }}"
   become: yes  
 
 - name: Remove wallet directory
