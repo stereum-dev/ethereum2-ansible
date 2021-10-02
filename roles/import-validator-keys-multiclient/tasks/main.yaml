@@ -99,7 +99,7 @@
     dest: "{{ e2dc_install_path }}/wallets"
     owner: "{{ stereum_user }}"
     group: "{{ stereum_user }}"
-    mode: '0755'
+    remote_src: yes
   become: yes
   when: validator_number is defined and validator_mnemonic is defined  
 
@@ -109,9 +109,16 @@
     dest: "{{ e2dc_install_path }}/wallets"
     owner: "{{ stereum_user }}"
     group: "{{ stereum_user }}"
-    mode: '0755'
+    remote_src: yes
   become: yes  
   when: exported_config_path is defined and exported_config_password is defined
+
+- name: Change wallets' ownership, group and permissions
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/wallets"
+    mode: '0755'
+    recurse: yes
+  become: yes  
 
 - name: Put the account password into the Dirk passphrases
   ansible.builtin.copy:
