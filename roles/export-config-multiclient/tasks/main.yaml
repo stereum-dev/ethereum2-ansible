@@ -8,13 +8,20 @@
        Confirm passphrase: "{{ export_config_password | quote }}"
   become: yes
 
+- name: Check wallet exists
+  find:
+    paths: "{{ e2dc_install_path }}/wallets/"
+  register: wallet
+  become: yes  
+
 - name: Export ethdo wallet
   ansible.builtin.copy:
     src: "{{ e2dc_install_path }}/wallets/"
     dest: /tmp/exported-config/wallet
     remote_src: yes
     mode: '0755'
-  become: yes  
+  become: yes
+  when: wallet.examined > 1  
 
 - name: Export wallet's passphrases 
   ansible.builtin.copy:
@@ -23,6 +30,7 @@
     remote_src: yes
     mode: '0755'
   become: yes  
+  when: wallet.examined > 1
 
 - name: Create compressed archive of wallet directory
   archive:
@@ -30,6 +38,7 @@
     dest: /tmp/exported-config/wallet.gz
     format: gz
   become: yes  
+  when: wallet.examined > 1
 
 - name: Encrypt wallet.gz file
   ansible.builtin.expect:
@@ -39,6 +48,7 @@
        Enter passphrase: "{{ export_config_password | quote }}"
        Confirm passphrase: "{{ export_config_password | quote }}"
   become: yes  
+  when: wallet.examined > 1
 
 - name: Remove wallet directory
   ansible.builtin.file:
@@ -48,6 +58,7 @@
     - /tmp/exported-config/wallet
     - /tmp/exported-config/wallet.gz
   become: yes  
+  when: wallet.examined > 1
 
 - name: Set exported config dir's permission
   ansible.builtin.file:

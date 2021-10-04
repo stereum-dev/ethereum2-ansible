@@ -29,12 +29,18 @@
         state: directory
       become: yes
 
+    - name: Check wallet exists
+      find:
+        paths: "{{ e2dc_install_path }}/wallets/"
+      register: wallets
+      become: yes  
+
     - name: Create directory for exporting wallet and passphrases
       ansible.builtin.file:
         path: /tmp/exported-config/wallet
         state: directory
       become: yes  
-      when: setup == "multiclient"
+      when: setup == "multiclient" and wallets.examined > 1
 
     - name: Install pip
       apt:
