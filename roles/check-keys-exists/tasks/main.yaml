@@ -26,8 +26,8 @@
   when: ((setup != "multiclient" and exported_config_path is defined) and keystore_files.matched < 1)  
 
 - name: Check wallet exists multiclient 'import-config'
-  find:
-    paths: /tmp/exported-config/wallet/
+  stat:
+    path: /tmp/exported-config/wallet
   register: wallet
   become: yes
   when: setup == "multiclient" and exported_config_path is defined  
@@ -35,6 +35,6 @@
 - name: Error - No Wallet found!
   fail:
     msg: "No Wallet found!"
-  when: ((setup == "multiclient" and exported_config_path is defined) and wallet.examined < 1)
+  when: ((setup == "multiclient" and exported_config_path is defined) and not wallet.stat.exists)
 
 # EOF  
