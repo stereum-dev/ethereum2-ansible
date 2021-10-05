@@ -48,27 +48,8 @@
   become_user: "{{ stereum_user }}"
   with_items: "{{ connectivity.eth1_nodes }}"
 
-# PRYSM no-geth
-- name: Set external eth1 for prysm (no-geth)
-  lineinfile:
-    path: "{{ e2dc_install_path }}/config/prysm/beacon-no-geth.yaml"
-    regexp: '^http\-web3provider:'
-    line: 'http-web3provider: "{{ connectivity.eth1_nodes.0 }}"'
-  when: setup == "prysm" and setup_override == "beacon-validator"
-  become: yes
-  become_user: "{{ stereum_user }}"
-
-- name: Set external eth1 fallback for prysm (no-geth)
-  lineinfile:
-    path: "{{ e2dc_install_path }}/config/prysm/beacon-no-geth.yaml"
-    regexp: '^fallback\-web3provider:'
-    line: 'fallback-web3provider: [''{{ connectivity.eth1_nodes | join("'',''") }}'']'
-  when: setup == "prysm" and setup_override == "beacon-validator"
-  become: yes
-  become_user: "{{ stereum_user }}"
-
-# PRYSM with geth
-- name: Set external eth1 for prysm (with geth)
+# PRYSM
+- name: Set external eth1 for prysm
   lineinfile:
     path: "{{ e2dc_install_path }}/config/prysm/beacon.yaml"
     regexp: '^http\-web3provider:'
@@ -77,7 +58,7 @@
   become: yes
   become_user: "{{ stereum_user }}"
 
-- name: Set external eth1 fallback for prysm (with geth)
+- name: Set external eth1 fallback for prysm
   lineinfile:
     path: "{{ e2dc_install_path }}/config/prysm/beacon.yaml"
     regexp: '^fallback\-web3provider:'
