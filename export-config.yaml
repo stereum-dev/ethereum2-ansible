@@ -33,7 +33,8 @@
       find:
         paths: "{{ e2dc_install_path }}/wallets/"
       register: wallets
-      become: yes  
+      become: yes
+      when: setup == "multiclient"  
 
     - name: Create directory for exporting wallet and passphrases
       ansible.builtin.file:
