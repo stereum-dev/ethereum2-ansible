@@ -34,13 +34,13 @@
     timeout: 10
     responses:
        'Do you want to continue?': "y"
-  when: (go_check.stat.exists and go_check.stat.isdir) and validator_mnemonic is defined
+  when: ((validator_number is defined and go_check is defined) and go_check.stat.exists) and go_check.stat.isdir
 
 - name: Remove Go directory if exists
   ansible.builtin.file:
     path: "{{ homedir.stdout }}/go"
     state: absent
-  when: (go_check.stat.exists and go_check.stat.isdir) and validator_mnemonic is defined
+  when: ((validator_number is defined and go_check is defined) and go_check.stat.exists) and go_check.stat.isdir
 
 - name: Download and Extract Go binary in '$HOME'
   shell: wget -c https://dl.google.com/go/go1.16.8.linux-amd64.tar.gz -O - | sudo tar -xz -C "{{ homedir.stdout }}"
@@ -134,6 +134,7 @@
     dest: "{{ e2dc_install_path }}/config/dirk/passphrases/account-passphrase.txt"
     mode: '0755'
   become: yes  
+  become_user: "{{ stereum_user }}"
   when: exported_config_path is defined and exported_config_password is defined
 
 - name: Put the wallet password into the Dirk passphrases
@@ -150,6 +151,7 @@
     dest: "{{ e2dc_install_path }}/config/dirk/passphrases/wallet-passphrase.txt"
     mode: '0755'
   become: yes
+  become_user: "{{ stereum_user }}"
   when: exported_config_path is defined and exported_config_password is defined  
 
 - name: Put the wallet name into the Vouch
