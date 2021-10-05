@@ -6,7 +6,12 @@
   tasks:
     - name: call stop-services role
       include_role:
-        name: stop-services 
+        name: stop-services
+    
+    - name: Extract Multiclient's wallet 'import-config'
+      include_role:
+        name: extract-wallet-multiclient
+      when: setup == "multiclient" and exported_config_path is defined  
 
     - name: Check - key files exists
       include_role:
