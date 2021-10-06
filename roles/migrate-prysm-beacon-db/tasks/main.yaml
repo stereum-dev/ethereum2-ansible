@@ -23,9 +23,15 @@
 
 - name: Delete outdated prysm beacon db
   file:
-    path: "{{ outdated_beacon_db_path }}/beaconchaindata/beaconchain.db"
+    path: "{{ outdated_beacon_db_path }}"
     state: absent
   when: outdated_beacon_db.stat.exists and current_beacon_db.stat.exists
+  become: yes
+
+- name: Delete outdated prysm slasher service db
+  file:
+    path: "{{ e2dc_install_path }}/data/prysm/slasher"
+    state: absent
   become: yes
 
 # EOF
