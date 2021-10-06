@@ -1,8 +1,0 @@
----
-- name: Checkout branch
-  git:
-    repo: "https://github.com/stereum-dev/ethereum2-docker-compose.git"
-    dest: "{{ e2dc_install_path }}"
-    version: "{{ networks[network] }}"
-  become: yes
-  become_user: "{{ stereum_user }}"
