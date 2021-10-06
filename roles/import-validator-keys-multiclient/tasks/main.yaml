@@ -133,6 +133,7 @@
     src: /tmp/exported-config/account-passphrase.txt
     dest: "{{ e2dc_install_path }}/config/dirk/passphrases/account-passphrase.txt"
     mode: '0755'
+    remote_src: yes
   become: yes  
   become_user: "{{ stereum_user }}"
   when: exported_config_path is defined and exported_config_password is defined
@@ -150,6 +151,7 @@
     src: /tmp/exported-config/wallet-passphrase.txt
     dest: "{{ e2dc_install_path }}/config/dirk/passphrases/wallet-passphrase.txt"
     mode: '0755'
+    remote_src: yes
   become: yes
   become_user: "{{ stereum_user }}"
   when: exported_config_path is defined and exported_config_password is defined  
