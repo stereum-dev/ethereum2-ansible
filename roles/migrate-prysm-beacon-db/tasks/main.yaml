@@ -1,0 +1,31 @@
+---
+- name: Build necessary paths
+  set_fact:
+    outdated_beacon_db_path: "{{ e2dc_install_path }}/data/prysm/beacon-slasher"
+    current_beacon_db_path: "{{ e2dc_install_path }}/data/prysm/beacon"
+
+- name: Check for outdated prysm beacon db
+  stat:
+    path: "{{ outdated_beacon_db_path }}/beaconchaindata/beaconchain.db"
+  register: outdated_beacon_db
+  become: yes
+
+- name: Check for current prysm beacon db
+  stat:
+    path: "{{ current_beacon_db_path }}/beaconchaindata/beaconchain.db"
+  register: current_beacon_db
+  become: yes
+
+- name: Move prysm beacon db if necessary
+  shell: "mv -f {{ outdated_beacon_db_path | quote }}/* {{ current_beacon_db_path | quote }}"
+  when: outdated_beacon_db.stat.exists and not current_beacon_db.stat.exists
+  become: yes
+
+- name: Delete outdated prysm beacon db
+  file:
+    path: "{{ outdated_beacon_db_path }}/beaconchaindata/beaconchain.db"
+    state: absent
+  when: outdated_beacon_db.stat.exists and current_beacon_db.stat.exists
+  become: yes
+
+# EOF

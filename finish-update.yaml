@@ -37,6 +37,8 @@
         name: configure-ansible
     - include_role:
         name: remove-tmp-password-prysm
+    - include_role:
+        name: migrate-prysm-beacon-db
 
     # update finished
     - name: Unset update in progress
