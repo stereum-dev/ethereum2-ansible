@@ -1,0 +1,9 @@
+---
+- hosts: stereumnodes
+  
+  tasks:
+    - name: All done
+      debug: 
+        msg: "All done!"
+
+# EOF  
