@@ -15,25 +15,31 @@
     state: latest
   when: ansible_distribution == "CentOS"
 
+- name: Check validator definition file exists
+  stat:
+    path: "{{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
+  register: val_definition
+  when: exported_config_path is not defined
+
 - name: Checking validator_definition is empty
   command: "cat {{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
   register: definition_content
   become: yes
-  when: exported_config_path is not defined
+  when: val_definition.stat.exists and exported_config_path is not defined
 
 - name: Remove validator_definition if it is empty
   file:
     path: "{{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
     state: absent
   become: yes
-  when: "{{ definition_content.stdout_lines | length < 3 }}" and exported_config_path is not defined
+  when: (val_definition.stat.exists and exported_config_path is not defined) and definition_content.stdout_lines | length < 3
 
 - name: Remove api-token file if no validators imported
   file:
     path: "{{ e2dc_install_path }}/wallets/validators/api-token.txt"
     state: absent
   become: yes
-  when: "{{ definition_content.stdout_lines | length < 3 }}" and exported_config_path is not defined 
+  when: (val_definition.stat.exists and exported_config_path is not defined) and definition_content.stdout_lines | length < 3
 
 - name: Run import
   shell: "./lighthouse_validator_import.sh {{ validator_password | quote }}"
@@ -59,11 +65,11 @@
 
 - name: Copy keystore files to backup directory
   copy:
-    src: "{{ item }}"
+    src: "{{ item.path }}"
     dest: "{{ e2dc_install_path }}/launchpad/keystore_backup"
     mode: '0755'
-  with_fileglob:
-    - "{{ e2dc_install_path }}/launchpad/keystore-*.json"
+    remote_src: yes
+  with_items: "{{ key_files.files }}"
   become: yes
 
 - name: Removing keys from launchpad
@@ -72,7 +78,7 @@
     state: absent
   with_items: "{{ key_files.files }}"
   become: yes
-  
+
 - name: error incorrect password
   fail:
     msg: "Incorrect Password!!! Please check your validator password and try it again."
