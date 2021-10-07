@@ -7,23 +7,39 @@
   with_items: "{{validator_keys}}"
   when: validator_keys is defined
 
+- name: Get keys from validator-keys-path in variable CLI
+  find:
+    paths: "{{ validator_keys_path }}"
+    patterns: "keystore-*.json"
+  register: key_files
+  become: yes  
+  when: setup != "multiclient" and validator_keys_path is defined
+
 - name: Copy lanchpad wallet's validator keys CLI
   copy:
-    src: "{{ item }}"
+    src: "{{ item.path }}"
     dest: "{{ e2dc_install_path }}/launchpad"
     mode: '0755'
-  with_fileglob:
-    - "{{ validator_keys_path }}/keystore-*.json"
+    remote_src: yes
+  with_items: "{{ key_files.files }}"
   become: yes
   when: setup != "multiclient" and validator_keys_path is defined
 
+- name: Get keys from exported-config in variable 'config-import'
+  find:
+    paths: /tmp/exported-config
+    patterns: "keystore-*.json"
+  register: key_files
+  become: yes  
+  when: setup != "multiclient" and exported_config_path is defined
+
 - name: Copy lanchpad wallet's validator keys 'config-import'
   copy:
-    src: "{{ item }}"
+    src: "{{ item.path }}"
     dest: "{{ e2dc_install_path }}/launchpad"
     mode: '0755'
-  with_fileglob:
-    - "/tmp/exported-config/keystore-*.json"
+    remote_src: yes
+  with_items: "{{ key_files.files }}"
   become: yes
   when: setup != "multiclient" and exported_config_path is defined
 
