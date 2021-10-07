@@ -25,21 +25,21 @@
   command: "cat {{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
   register: definition_content
   become: yes
-  when: val_definition.stat.exists and exported_config_path is not defined
+  when: exported_config_path is not defined and val_definition.stat.exists
 
 - name: Remove validator_definition if it is empty
   file:
     path: "{{ e2dc_install_path }}/wallets/validators/validator_definitions.yml"
     state: absent
   become: yes
-  when: (val_definition.stat.exists and exported_config_path is not defined) and definition_content.stdout_lines | length < 3
+  when: exported_config_path is not defined and (val_definition.stat.exists and definition_content.stdout_lines | length < 3)
 
 - name: Remove api-token file if no validators imported
   file:
     path: "{{ e2dc_install_path }}/wallets/validators/api-token.txt"
     state: absent
   become: yes
-  when: (val_definition.stat.exists and exported_config_path is not defined) and definition_content.stdout_lines | length < 3
+  when: exported_config_path is not defined and (val_definition.stat.exists and definition_content.stdout_lines | length < 3)
 
 - name: Run import
   shell: "./lighthouse_validator_import.sh {{ validator_password | quote }}"
