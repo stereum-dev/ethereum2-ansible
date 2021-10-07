@@ -15,6 +15,7 @@
       ansible.builtin.unarchive:
         src: /tmp/age.gz
         dest: /usr/local/bin
+        remote_src: yes
       become: yes 
 
     - name: Remove '/tmp/age.gz' file
@@ -43,17 +44,21 @@
       become: yes  
       when: setup == "multiclient" and wallets.examined > 1
 
-    - name: Install pip
+    - name: Install pip, expect
       apt:
         update_cache: yes
         name:
           - python3-pip
-      become: yes      
+          - expect
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-    - name: Install pexpect
-      pip:
-        name: pexpect  
-      become: yes  
+    - name: Install pip, expect
+      yum:
+        name:
+          - python3-pip
+          - expect
+        state: latest
+      when: ansible_distribution == "CentOS"
 
     - name: Export config prysm
       include_role:
