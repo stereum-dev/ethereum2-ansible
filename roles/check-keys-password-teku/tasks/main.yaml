@@ -43,21 +43,35 @@
   with_items: '{{importing_key_cli.stdout_lines}}'
   when: validator_keys is not defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
 
+- name: Get keystores files from launchpad in variable 'import-config'
+  find:
+    paths: "{{ e2dc_install_path }}/launchpad"
+    patterns: "keystore-*.json"
+  register: keystore_files
+  become: yes
+  when: exported_config_path is defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
+
 - name: Remove keystores files from launchpad 'import-config'
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: absent
-  with_fileglob:
-    - "{{ e2dc_install_path }}/launchpad/*.json"
+  with_items: "{{ keystore_files.files }}"
+  become: yes
+  when: exported_config_path is defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
+
+- name: Get password files from launchpad in variable 'import-config'
+  find:
+    paths: "{{ e2dc_install_path }}/launchpad"
+    patterns: "keystore-*.txt"
+  register: password_files
   become: yes
   when: exported_config_path is defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
 
 - name: Remove password files from launchpad 'import-config'
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: absent
-  with_fileglob:
-    - "{{ e2dc_install_path }}/launchpad/*.txt"
+  with_items: "{{ password_files.files }}"
   become: yes
   when: exported_config_path is defined and (validator_log.stdout is search('Failed to decrypt keystore') or validator_log.stdout is search('Keystore password cannot be empty'))
 
