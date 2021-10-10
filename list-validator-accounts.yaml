@@ -39,4 +39,9 @@
         name: list-validator-keys-teku
       when: setup == "teku"
 
+    - name: List accounts multiclient
+      include_role:
+        name: list-validator-keys-multiclient
+      when: setup == "multiclient"  
+
 # EOF
