@@ -1,0 +1,102 @@
+---
+- name: Get wallet dir
+  shell: "ls"
+  args:
+    chdir: "{{ e2dc_install_path }}/wallets"
+  register: wallet_dir
+  become: yes
+
+- name: Copy wallet-file into launchpad directory
+  ansible.builtin.copy:
+    src: "{{ e2dc_install_path }}/wallets/{{ wallet_dir.stdout }}/{{ wallet_dir.stdout }}"
+    dest: "{{ e2dc_install_path }}/launchpad"
+    remote_src: yes
+  become: yes
+  become_user: "{{ stereum_user }}"
+  when: wallet_dir.stdout | length > 0
+
+- name: Remove wallet-file temporarily
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/wallets/{{ wallet_dir.stdout }}/{{ wallet_dir.stdout }}"
+    state: absent
+  become: yes
+  become_user: "{{ stereum_user }}"
+  when: wallet_dir.stdout | length > 0
+
+- name: Get key file names
+  shell: "ls"
+  args:
+    chdir: "{{ e2dc_install_path }}/wallets/{{ wallet_dir.stdout }}"
+  register: file_names
+  become: yes
+  become_user: "{{ stereum_user }}"
+  when: wallet_dir.stdout | length > 0
+
+- name: Get key file contents
+  shell: "cat {{ e2dc_install_path }}/wallets/{{ wallet_dir.stdout }}/{{ item }}"
+  register: file_contents
+  become: yes
+  become_user: "{{ stereum_user }}"
+  with_items: "{{ file_names.stdout_lines }}"
+  when: wallet_dir.stdout | length > 0
+
+- name: Get contents' stdout in a variable
+  debug:
+    msg: "{% set output = [] %}\
+      {% for x in file_contents.results %}\
+        {{ output.append( x.stdout) }}\
+      {% endfor %}\
+      {{output}}"
+  register: all_contents
+  when: file_contents is defined
+
+- name: Create temp file for all contents
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/wallets/temp.txt"
+    state: touch
+    mode: u=rw,g=rw,o=rw
+  become: yes
+  when: all_contents is defined
+
+- name: Copy all contents into text file
+  copy:
+    content: "{{ all_contents }}"
+    dest: "{{ e2dc_install_path }}/wallets/temp.txt"
+  become: yes
+  become_user: "{{ stereum_user }}"
+  when: all_contents is defined
+
+- name: Show all contents
+  shell: "cat '{{ e2dc_install_path }}/wallets/temp.txt'"
+  args:
+    chdir: "{{ e2dc_install_path }}/wallets"
+  become: yes
+  when: all_contents is defined
+
+- name: Copy wallet-file back to wallet directory
+  ansible.builtin.copy:
+    src: "{{ e2dc_install_path }}//launchpad/{{ wallet_dir.stdout }}"
+    dest: "{{ e2dc_install_path }}/wallets/{{ wallet_dir.stdout }}"
+    owner: "{{ stereum_user }}"
+    group: "{{ stereum_user }}"
+    mode: '0755'
+    remote_src: yes
+  become: yes
+  when: wallet_dir.stdout | length > 0
+
+- name: Remove wallet-file from launchpad
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/launchpad/{{ wallet_dir.stdout }}"
+    state: absent
+  become: yes
+  when: wallet_dir.stdout | length > 0
+
+- name: Remove temp file
+  ansible.builtin.file:
+    path: "{{ e2dc_install_path }}/wallets/temp.txt"
+    state: absent
+  become: yes
+  become_user: "{{ stereum_user }}"
+  when: all_contents is defined
+
+# EOF  

@@ -3,6 +3,15 @@
   apt:
     name: expect
 
+- name: Copy delete.yaml
+  ansible.builtin.copy:
+    src: "{{ e2dc_install_path }}/compose-examples/prysm-only/delete-account.yaml"
+    dest: "{{ e2dc_install_path }}"
+    remote_src: yes
+    mode: '0755'
+  become: yes
+  become_user: "{{ stereum_user }}"    
+
 - name: Run delete validator
   shell: "{{ e2dc_install_path }}/prysm_validator_delete.sh {{ validator_pubkey }}"
   args:

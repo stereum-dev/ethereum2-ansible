@@ -77,7 +77,7 @@
   when: validator_number is defined and validator_mnemonic is defined
 
 - name: create ethdo wallet
-  shell: ~/go/bin/ethdo wallet create --type=hd --mnemonic= "{{ validator_mnemonic }}" --wallet="Wallet" --wallet-passphrase="{{password_gen.stdout}}"
+  shell: ~/go/bin/ethdo wallet create --type=hd --mnemonic="{{ validator_mnemonic }}" --wallet="Wallet" --wallet-passphrase="{{password_gen.stdout}}"
   when: validator_number is defined and validator_mnemonic is defined
   
 - name: create account(s)
