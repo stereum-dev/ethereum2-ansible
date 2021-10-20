@@ -23,7 +23,7 @@
   lineinfile:
     path: "{{ e2dc_install_path }}/config/lodestar/beacon.yaml"
     regexp: '^eth1.providerUrls:.*'
-    line: 'eth1.providerUrls: {{ connectivity.eth1_nodes.0 }}'
+    line: 'eth1.providerUrls: [''{{ connectivity.eth1_nodes | join("'',''") }}'']'
   when: setup == "lodestar" and setup_override == "no-geth"
   become: yes
   become_user: "{{ stereum_user }}"
