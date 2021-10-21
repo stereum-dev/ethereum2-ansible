@@ -11,10 +11,24 @@
   when: ansible_distribution == "CentOS"
 
 - name: Run exit validator
-  shell: "{{ e2dc_install_path }}/prysm_validator_exit.sh \"{{ validator_pubkey }}\""
+  shell: "{{ e2dc_install_path }}/prysm_validator_exit.sh {{ validator_pubkey }}"
   args:
     chdir: "{{ e2dc_install_path }}"
   become: yes
   become_user: "{{ stereum_user }}"
   ignore_errors: yes
   when: setups[setup].exit_account is defined
+
+- name: Beacon node is not synced
+  fail:
+    msg: "Beacon node is not fully synced yet"
+  become: yes
+  when: "'expected current epoch >= exit' in exit_output.stdout"
+
+- name: Validator is not active
+  fail:
+    msg: "This Validator account is not active"
+  become: yes
+  when: "'non-active validator cannot exit' in exit_output.stdout"
+
+# EOF  

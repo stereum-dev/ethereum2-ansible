@@ -6,18 +6,4 @@
   become: yes
   become_user: "{{ stereum_user }}"
 
-- name: Copy create-account.yaml
-  command: "cp 'compose-examples/{{ setups[setup].create_account }}' 'create-account.yaml'"
-  args:
-    chdir: "{{ e2dc_install_path }}"
-  become: yes
-  become_user: "{{ stereum_user }}"
-  when: setups[setup].create_account is defined
-
-- name: Copy exit-account.yaml
-  command: "cp 'compose-examples/{{ setups[setup].exit_account }}' 'exit-account.yaml'"
-  args:
-    chdir: "{{ e2dc_install_path }}"
-  become: yes
-  become_user: "{{ stereum_user }}"
-  when: setups[setup].exit_account is defined  
+# EOF 
