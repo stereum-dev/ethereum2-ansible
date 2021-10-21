@@ -2,15 +2,13 @@
 - name: Install expect
   apt:
     name: expect
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-- name: Copy delete.yaml
-  ansible.builtin.copy:
-    src: "{{ e2dc_install_path }}/compose-examples/prysm-only/delete-account.yaml"
-    dest: "{{ e2dc_install_path }}"
-    remote_src: yes
-    mode: '0755'
-  become: yes
-  become_user: "{{ stereum_user }}"    
+- name: Install expect
+  yum:
+    name: expect
+    state: latest
+  when: ansible_distribution == "CentOS"
 
 - name: Run delete validator
   shell: "{{ e2dc_install_path }}/prysm_validator_delete.sh {{ validator_pubkey }}"
