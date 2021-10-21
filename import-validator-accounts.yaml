@@ -4,10 +4,6 @@
     - /etc/stereum/ethereum2.yaml
 
   tasks:
-    - name: call stop-services role
-      include_role:
-        name: stop-services
-    
     - name: Extract Multiclient's wallet 'import-config'
       include_role:
         name: extract-wallet-multiclient
@@ -67,6 +63,10 @@
           name: import-validator-keys-multiclient
         when: setup == "multiclient"
       ignore_errors: yes
+
+    - name: call stop-services role
+      include_role:
+        name: stop-services  
 
     - name: call start-services role
       include_role:
