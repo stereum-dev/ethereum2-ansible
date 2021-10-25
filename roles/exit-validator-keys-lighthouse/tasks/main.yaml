@@ -22,7 +22,7 @@
 
 - name: Run exit validator
   ansible.builtin.expect:
-    command: "docker-compose -f exit-account.yaml run -e LAUNCHPADDIR='/opt/app/launchpad/{{ validator_keystore }}' exit-validator"
+    command: "docker exec -it -e LAUNCHPADDIR='/opt/app/launchpad/{{ validator_keystore }}' stereum_validator_1 /opt/app/start/exit-validator.sh"
     timeout: 10
     responses:
       'Enter the keystore password for validator': "{{ validator_password }}"
@@ -45,4 +45,10 @@
   become: yes
   when: "'Validator status: ExitedUnslashed' in exit_output.stdout"  
 
-# EOF  
+- name: error beacon node is still syncing
+  fail:
+    msg: "The beacon node is still syncing"
+  become: yes
+  when: "'Beacon node is still syncing' in exit_output.stdout"
+
+# EOF

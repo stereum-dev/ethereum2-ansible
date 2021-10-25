@@ -4,6 +4,16 @@
     - /etc/stereum/ethereum2.yaml
 
   tasks:
+    - name: call stop-services role
+      include_role:
+        name: stop-services
+      when: setup == "lighthouse"
+
+    - name: Create lighthouse validator image
+      shell: docker commit stereum_validator_1 validator_image
+      become: yes
+      when: setup == "lighthouse"
+
     - name: Extract Multiclient's wallet 'import-config'
       include_role:
         name: extract-wallet-multiclient
