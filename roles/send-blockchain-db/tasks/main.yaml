@@ -1,26 +1,27 @@
 ---
 - name: Build paths
   set_fact:
+    www_path_network: "/var/www/html/{{ network }}"
     eth2_dbs:
-      - 
+      -
         name: "nimbus"
         tmp_path: "/tmp/{{ network }}/nimbus"
         www_path: "/var/www/html/{{ network }}/nimbus"
         db_path: "/var/www/html/{{ network }}/nimbus/nimbus-{{ ansible_date_time.epoch }}.tar.gz"
         network_files: "/tmp/{{ network }}/nimbus/beacon/beacon_node.enr"
-      - 
+      -
         name: "lighthouse"
         tmp_path: "/tmp/{{ network }}/lighthouse"
         www_path: "/var/www/html/{{ network }}/lighthouse"
         db_path: "/var/www/html/{{ network }}/lighthouse/lighthouse-{{ ansible_date_time.epoch }}.tar.gz"
         network_files: "/tmp/{{ network }}/lighthouse/beacon/network"
-      - 
+      -
         name: "prysm"
         tmp_path: "/tmp/{{ network }}/prysm"
         www_path: "/var/www/html/{{ network }}/prysm"
         db_path: "/var/www/html/{{ network }}/prysm/prysm-{{ ansible_date_time.epoch }}.tar.gz"
         network_files: "/tmp/{{ network }}/prysm/beacon/metaData"
-      - 
+      -
         name: "teku"
         tmp_path: "/tmp/{{ network }}/teku"
         www_path: "/var/www/html/{{ network }}/teku"
@@ -130,6 +131,21 @@
     state: link
   with_items: "{{ eth2_dbs }}"
   when: inventory_hostname in groups['fastsyncnodes']
+  become: yes
+
+- name: Find all files older than 4 days
+  find:
+    paths: "{{ www_path_network }}"
+    age: 4d
+    recurse: yes
+  register: filesOlderThan4
+  become: yes
+
+- name: Remove older than 4 days old files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ filesOlderThan4.files }}"
   become: yes
 
 # EOF
